@@ -12,14 +12,20 @@ const io = new Server(server, {
     }
 });
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+// middleware --> all req pass here before
+app.use(cors()); //allow cross-origin request, mainly for localhost testing
+app.use(express.json()); //parse JSON from requests
 
-// Basic route
+// Route setups (endpoints)
 app.get('/', (req, res) => {
     res.json({ message: 'Multiplayer game server is running!' });
 });
+
+app.get('/test', (req, res) => {
+    res.json({ message: 'you made it here! means you understood how it works',
+    secondMessage: 'This is a test message!'
+    });
+})
 
 // Socket.io connection handling
 io.on('connection', (socket) => {
@@ -37,8 +43,9 @@ io.on('connection', (socket) => {
     });
 });
 
+// Server port, either railway port or default 3001
 const PORT = process.env.PORT || 3001;
-
+// Sever starts listening to port
 server.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
     console.log(`📡 Socket.io ready for connections`);
