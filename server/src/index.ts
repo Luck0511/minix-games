@@ -5,6 +5,7 @@ import cors from 'cors';
 
 const app = express();
 const server = createServer(app);
+//server setup
 const io = new Server(server, {
     cors: {
         origin: ["http://localhost:5173", "http://localhost:5174"], // Vite dev servers
@@ -28,18 +29,18 @@ app.get('/test', (req, res) => {
 })
 
 // Socket.io connection handling
-io.on('connection', (socket) => {
-    console.log('A user connected:', socket.id);
+io.on('connection', (clientSocket) => {
+    console.log('A user connected:', clientSocket.id);
 
     // Handle disconnection
-    socket.on('disconnect', () => {
-        console.log('User disconnected:', socket.id);
+    clientSocket.on('disconnect', () => {
+        console.log('User disconnected:', clientSocket.id);
     });
 
     // Example: Handle a test message
-    socket.on('test-message', (data) => {
+    clientSocket.on('test-message', (data) => {
         console.log('Received test message:', data);
-        socket.emit('test-response', { message: 'Hello from server!' });
+        clientSocket.emit('test-response', { message: 'Hello from server!' });
     });
 });
 
