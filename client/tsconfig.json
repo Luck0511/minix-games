@@ -1,11 +1,21 @@
 {
   "files": [],
   "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
   ],
-  "paths": {
-    "@shared/*": ["../shared/*"]
+  "compilerOptions": {
+    "paths": {
+      "@shared/*": [
+        "../shared/*"
+      ]
+    }
   },
-  "include": ["../shared/**/*"]
+  "include": [
+    "../shared/**/*"
+  ]
 }
