@@ -17,6 +17,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const [isConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
+        console.log('useEffect triggered')
         // handle connection
         socket.on('connect', () => {
             console.log('✅ Connected to server!');
@@ -29,7 +30,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         });
         // cleanup on component unmount
         return () => {
-            Disconnect(); // call global disconnect function
+            socket.off('connect');
+            socket.off('disconnect');
         };
     }, []);
 
