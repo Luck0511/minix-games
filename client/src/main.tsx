@@ -4,7 +4,7 @@ import './assets/index.css'
 import App from './App.tsx'
 
 //socket context provider
-import {SocketProvider} from "./context/SocketContext.tsx";
+import {SocketProvider} from "./context/Socket.ctx.tsx";
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>

@@ -10,7 +10,7 @@ import type {SocketContextType} from "@shared/types.ts";
 const SERVER_URL = 'http://localhost:3001';
 const socket: Socket = io(SERVER_URL);
 
-const SocketContext = createContext<SocketContextType|undefined>(undefined)
+const SocketCtx = createContext<SocketContextType|undefined>(undefined)
 
 //context provider
 export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -34,14 +34,14 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }, []);
 
     return (
-        <SocketContext.Provider value={{ socket:socket, isConnected }}>
+        <SocketCtx.Provider value={{ socket:socket, isConnected }}>
             {children}
-        </SocketContext.Provider>
+        </SocketCtx.Provider>
     );
 };
 //returns the current socketContext (instead of calling useContext again)
 export const useSocket = (): SocketContextType => {
-    const context = useContext(SocketContext);
+    const context = useContext(SocketCtx);
     if (!context) {
         //throws error if used inappropriately
         throw new Error('useSocket must be used within a SocketProvider');
