@@ -1,51 +1,37 @@
-import { useState, useEffect } from 'react';
-import { io, Socket } from 'socket.io-client';
-
-// Connect to server
-const SERVER_URL = 'http://localhost:3001';
-const socket: Socket = io(SERVER_URL);
+//utility import
+import {useEffect, useState} from 'react';
+//types import
+import {useSocket} from "./context/Socket.ctx.tsx";
+import {LoginFormCmp} from "./components/LoginForm.cmp.tsx";
 
 function App() {
-    const [isConnected, setIsConnected] = useState(false);
+    //config
+    const {socket, isConnected} = useSocket();
+    //states
     const [serverMessage, setServerMessage] = useState('');
     const [inputMessage, setInputMessage] = useState('');
 
-    useEffect(() => {
-        // Connection event handlers
-        socket.on('connect', () => {
-            console.log('✅ Connected to server!');
-            setIsConnected(true);
-        });
-
-        socket.on('disconnect', () => {
-            console.log('❌ Disconnected from server');
-            setIsConnected(false);
-        });
-
-        // Listen for server responses
-        socket.on('test-response', (data) => {
-            console.log('Received from server:', data);
-            setServerMessage(data.message);
-        });
-
-        // Cleanup on component unmount
-        return () => {
-            socket.off('connect');
-            socket.off('disconnect');
-            socket.off('test-response');
-        };
-    }, []);
-
     // Send message to server
     const sendTestMessage = () => {
+        console.log(socket, isConnected);
         if (inputMessage.trim()) {
-            socket.emit('test-message', {
+            socket!.emit('test-message', {
                 message: inputMessage,
                 timestamp: new Date().toISOString()
             });
             setInputMessage('');
         }
     };
+
+    useEffect(() => {
+        socket!.on('test-response', (data) => {
+            setServerMessage(data.message);
+        })
+        return ()=>{
+            socket.off('test-response');
+        }
+    }, [])
+
 
     return (
         <div>
@@ -55,6 +41,8 @@ function App() {
             <div>
                 Status: {isConnected ? '🟢 Connected' : '🔴 Disconnected'}
             </div>
+
+            <LoginFormCmp />
 
             {/* Test Communication */}
             <div>
@@ -68,7 +56,7 @@ function App() {
                 />
                 <button
                     onClick={sendTestMessage}
-                    disabled={!isConnected}>
+                    disabled={(isConnected && !inputMessage)}>
                     Send Test Message
                 </button>
             </div>
@@ -83,7 +71,7 @@ function App() {
             {/* Socket ID Info */}
             {isConnected && (
                 <div>
-                    Your Socket ID: {socket.id}
+                    Your Socket ID: {socket!.id}
                 </div>
             )}
         </div>

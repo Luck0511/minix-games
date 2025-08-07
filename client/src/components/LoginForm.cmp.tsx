@@ -7,27 +7,36 @@ export const LoginFormCmp = () => {
     const [password, setPassword] = useState('');
 
     //socket from context
-    const {socket} = useSocket()
+    const {socket, isConnected} = useSocket()
 
-    const sendFormaData = (e:FormEvent<HTMLFormElement>)=>{
+    const sendFormData = (e:FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
         //save data in object
         const userData = {
             playerName: userName,
             password: password,
         }
+        //check connection
+        if(!isConnected){
+            console.log('Not connected to the server');
+            return
+        }
+
         //send data
-        if(userData){
+        if(userData.password && userData.playerName){
+            console.log(userData);
             socket.emit('user-info', {
                 withCredentials: true,
-                message: userData
-
+                message: userData,
+                timestamp: new Date().toISOString(),
             })
+        }else{
+            console.log('Info empty')
         }
     }
 
     return (
-        <form onSubmit={sendFormaData}>
+        <form onSubmit={sendFormData}>
             <label>
                 UserName:
                 <input id={'userName'}
@@ -42,7 +51,7 @@ export const LoginFormCmp = () => {
                        placeholder={'Insert your password'}
                        onChange={(e) => setPassword(e.target.value)}/>
             </label>
-            <button type="submit">Login</button>
+            <button type="submit" disabled={!isConnected && (!userName && !password)}>Login</button>
         </form>
     );
 };

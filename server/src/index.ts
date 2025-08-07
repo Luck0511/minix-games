@@ -37,11 +37,16 @@ io.on('connection', (clientSocket) => {
         console.log('User disconnected:', clientSocket.id);
     });
 
-    // Example: Handle a test message
+/*=== LISTENERS FOR CUSTOM EVENTS ===*/
+    //Handle a test message
     clientSocket.on('test-message', (data) => {
         console.log('Received test message:', data);
         clientSocket.emit('test-response', { message: 'Hello from server!' });
     });
+    //Handle user-info received
+    clientSocket.on('user-info', (userData)=>{
+        console.table(userData)
+    })
 });
 
 // Server port, either railway port or default 3001
