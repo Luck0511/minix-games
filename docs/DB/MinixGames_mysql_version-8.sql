@@ -1,5 +1,3 @@
--- noinspection SqlNoDataSourceInspectionForFile
-
 drop database minixgames_db;
 create database minixgames_db;
 use minixgames_db;
