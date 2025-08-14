@@ -1,3 +1,5 @@
+-- noinspection SqlNoDataSourceInspectionForFile
+
 -- Dummy Data for MinixGames Database
 -- Run this after creating the database structure
 
