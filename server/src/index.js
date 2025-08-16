@@ -13,13 +13,17 @@ const io = new Server(server, {
     }
 });
 
-// middleware --> all req pass here before
+// middleware setup --> all req pass here before
 app.use(cors()); //allow cross-origin request, mainly for localhost testing
-app.use(express.json()); //parse JSON from requests
+app.use(express.json()); //parse JSON from requests-response
 
-// Route setups (endpoints)
+// APIS --> ENDPOINTS MANAGEMENT
 app.get('/', (req, res) => {
-    res.json({ message: 'Multiplayer game server is running!' });
+    res.json({
+        message : "Multiplayer game server is running!",
+        value: "someValue",
+        array: ["one","six","seven"]
+    });
 });
 
 app.get('/test', (req, res) => {
@@ -28,7 +32,7 @@ app.get('/test', (req, res) => {
     });
 })
 
-// Socket.io connection handling
+// Socket.io connection handling --> SOCKET MANAGEMENT
 io.on('connection', (clientSocket) => {
     console.log('A user connected:', clientSocket.id);
 
