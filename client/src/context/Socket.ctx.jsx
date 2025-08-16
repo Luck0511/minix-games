@@ -2,18 +2,16 @@
 
 //utility import
 import React, {createContext, useContext, useEffect, useState} from "react";
-import {io, Socket} from "socket.io-client";
-//type import
-import type {SocketContextType} from "@shared/types.ts";
+import {io} from "socket.io-client";
 
 // Server connection
 const SERVER_URL = 'http://localhost:3001';
-const socket: Socket = io(SERVER_URL);
+const socket = io(SERVER_URL);
 
-const SocketCtx = createContext<SocketContextType|undefined>(undefined)
+const SocketCtx = createContext(undefined)
 
 //context provider
-export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const SocketProvider = ({ children }) => {
     const [isConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
@@ -42,7 +40,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     );
 };
 //returns the current socketContext (instead of calling useContext again)
-export const useSocket = (): SocketContextType => {
+export const useSocket = ()=> {
     const context = useContext(SocketCtx);
     if (!context) {
         //throws error if used inappropriately

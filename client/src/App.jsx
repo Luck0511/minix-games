@@ -1,8 +1,8 @@
 //utility import
 import {useEffect, useState} from 'react';
 //types import
-import {useSocket} from "./context/Socket.ctx.tsx";
-import {LoginFormCmp} from "./components/LoginForm.cmp.tsx";
+import {useSocket} from "./context/Socket.ctx.jsx";
+import {LoginFormCmp} from "./components/LoginForm.cmp.jsx";
 
 function App() {
     //config
@@ -15,7 +15,7 @@ function App() {
     const sendTestMessage = () => {
         console.log(socket, isConnected);
         if (inputMessage.trim()) {
-            socket!.emit('test-message', {
+            socket.emit('test-message', {
                 message: inputMessage,
                 timestamp: new Date().toISOString()
             });
@@ -24,7 +24,7 @@ function App() {
     };
 
     useEffect(() => {
-        socket!.on('test-response', (data) => {
+        socket.on('test-response', (data) => {
             setServerMessage(data.message);
         })
         return ()=>{
@@ -71,7 +71,7 @@ function App() {
             {/* Socket ID Info */}
             {isConnected && (
                 <div>
-                    Your Socket ID: {socket!.id}
+                    Your Socket ID: {socket.id}
                 </div>
             )}
         </div>

@@ -1,12 +1,12 @@
 import {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
 import './assets/index.css'
-import App from './App.tsx'
+import App from './App.jsx'
 
 //socket context provider
-import {SocketProvider} from "./context/Socket.ctx.tsx";
+import {SocketProvider} from "./context/Socket.ctx.jsx";
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById('root')).render(
     <StrictMode>
         {/*providing socket to all app*/}
         <SocketProvider>

@@ -1,5 +1,5 @@
-import {type FormEvent, useState} from "react";
-import {useSocket} from "../context/Socket.ctx.tsx";
+import {useState} from "react";
+import {useSocket} from "../context/Socket.ctx.jsx";
 
 export const LoginFormCmp = () => {
     //states for login
@@ -9,7 +9,7 @@ export const LoginFormCmp = () => {
     //socket from context
     const {socket, isConnected} = useSocket()
 
-    const sendFormData = (e:FormEvent<HTMLFormElement>)=>{
+    const sendFormData = (e)=>{
         e.preventDefault();
         //save data in object
         const userData = {
