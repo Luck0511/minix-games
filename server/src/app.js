@@ -4,12 +4,11 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 
 const app = express();
-const server = createServer(app);
-//server setup
+export const server = createServer(app);
+
 const io = new Server(server, {
     cors: {
         origin: ["http://localhost:5173", "http://localhost:5174"], // Vite dev servers
-        methods: ["GET", "POST"]
     }
 });
 
@@ -32,6 +31,7 @@ app.get('/test', (req, res) => {
     });
 })
 
+
 // Socket.io connection handling --> SOCKET MANAGEMENT
 io.on('connection', (clientSocket) => {
     console.log('A user connected:', clientSocket.id);
@@ -51,12 +51,4 @@ io.on('connection', (clientSocket) => {
     clientSocket.on('user-info', (userData)=>{
         console.table(userData)
     })
-});
-
-// Server port, either railway port or default 3001
-const PORT = process.env.PORT || 3001;
-// Sever starts listening to port
-server.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📡 Socket.io ready for connections`);
 });
