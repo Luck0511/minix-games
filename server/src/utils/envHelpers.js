@@ -6,7 +6,7 @@
 * @returns {string} env variable value
 * @throws {Error} if required variable is not set / blocks execution
 **/
-const getRequiredEnv = (key, defaultValue=null) => {
+export const getRequiredEnv = (key, defaultValue=null) => {
     const value = process.env[key] || defaultValue;
     if(value === undefined || value === null || value === '') {
         throw new Error(`Required env variable ${key}: is not set`);
@@ -19,7 +19,7 @@ const getRequiredEnv = (key, defaultValue=null) => {
  * @param {boolean} defaultValue default returned boolean value if not set
  * @returns {boolean} env variable value
 **/
-const getBooleanEnv = (key, defaultValue=false) => {
+export const getBooleanEnv = (key, defaultValue=false) => {
     const value = process.env[key];
     if(value === undefined) return defaultValue;
     return ['true', '1', 'yes', 'on'].includes(value.toLowerCase());
@@ -31,7 +31,7 @@ const getBooleanEnv = (key, defaultValue=false) => {
  * @returns {number} env variable value
  * @throws {Error} if value is not a valid number
 **/
-const getNumericEnv = (key, defaultValue=null) => {
+export const getNumericEnv = (key, defaultValue=null) => {
     const value = process.env[key];
     if(value===undefined) return defaultValue;
     const parsed = Number(value);
@@ -46,7 +46,7 @@ const getNumericEnv = (key, defaultValue=null) => {
  * @param {Array} defaultValue default Array value if not set
  * @returns {Array} parsed array
 **/
-const getArrayEnv = (key, defaultValue=[]) => {
+export const getArrayEnv = (key, defaultValue=[]) => {
     const value = process.env[key];
     if(!value) return defaultValue;
     return value.split(',').map(item=>item.trim()).filter(Boolean);
@@ -58,7 +58,7 @@ const getArrayEnv = (key, defaultValue=[]) => {
  * @returns {Object} parsed JSON env value
  * @throws {Error} if value is not a valid JSON
 **/
-const getJSONEnv = (key, defaultValue=null) => {
+export const getJSONEnv = (key, defaultValue=null) => {
     const value = process.env[key];
     if(!value) return defaultValue;
 
@@ -72,31 +72,20 @@ const getJSONEnv = (key, defaultValue=null) => {
  * #### Check if running in dev environment
  * @returns {boolean} True if in development
 **/
-const isDevelopment = ()=>{
+export const isDevelopment = ()=>{
     return process.env.NODE_ENV === 'development';
 }
 /**
  * #### Check if running in prod environment
  * @returns {boolean} True if in production
  **/
-const isProduction = ()=>{
+export const isProduction = ()=>{
     return process.env.NODE_ENV === 'production';
 }
 /**
  * #### Check if running in test environment
  * @returns {boolean} True if in testing
  **/
-const isTest = ()=>{
+export const isTest = ()=>{
     return process.env.NODE_ENV === 'test';
-}
-
-module.exports = {
-    getRequiredEnv,
-    getBooleanEnv,
-    getNumericEnv,
-    getArrayEnv,
-    getJSONEnv,
-    isDevelopment,
-    isProduction,
-    isTest,
 }
