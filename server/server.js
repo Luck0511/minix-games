@@ -3,6 +3,7 @@ dotenv.config();
 
 import {server} from './src/app.js';
 import {appConfig} from "./src/config/config.js";
+import {validateConfig} from './src/config/config.js';
 import {testConnection} from './src/config/dbConfig.js';
 
 const startServer = async () => {
@@ -10,6 +11,9 @@ const startServer = async () => {
         //test connection to database
         await testConnection();
         console.log('✅ Database connected successfully');
+
+        //check configuration
+        validateConfig();
 
         //start server
         server.listen(appConfig.app.port, ()=>{

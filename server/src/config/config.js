@@ -49,7 +49,7 @@ export const appConfig = {
 /**
  * #### Validates app configuration for production environment
  **/
-const validateConfig = ()=>{
+export const validateConfig = ()=>{
     //minimum required keys with existing value
     const requiredInProd = [
         'JWT_SECRET',
