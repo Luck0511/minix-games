@@ -5,7 +5,7 @@ import React, {createContext, useContext, useEffect, useState} from "react";
 import {io} from "socket.io-client";
 
 // Server connection
-const SERVER_URL = 'http://localhost:3001';
+const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 const socket = io(SERVER_URL);
 
 const SocketCtx = createContext(undefined)
