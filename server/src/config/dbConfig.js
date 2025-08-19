@@ -5,7 +5,7 @@ import {Sequelize} from "sequelize";
 import {appConfig} from './config.js'
 
 //Sequelize instance
-const sequelize = new Sequelize(appConfig.database);
+export const sequelize = new Sequelize(appConfig.database);
 
 export const testConnection = async ()=>{
     try{
