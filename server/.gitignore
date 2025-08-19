@@ -10,3 +10,12 @@ node_modules
 *.njsproj
 *.sln
 *.sw?
+
+# Environment variables
+.env
+.env.local
+.env.test.local
+.env.production.local
+
+# Keep example files
+!.env.example

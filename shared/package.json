@@ -1,0 +1,14 @@
+{
+  "name": "shared",
+  "version": "1.0.0",
+  "description": "shared types and interfaces of my project",
+  "main": "types.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "itLvck",
+  "license": "ISC",
+  "dependencies": {
+    "socket.io-client": "^4.8.1"
+  }
+}
