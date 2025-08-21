@@ -157,3 +157,8 @@ CHECK (
     (isTournament = true AND tournamentID IS NOT NULL AND sessionID IS NULL) OR
     (isTournament = false AND sessionID IS NOT NULL AND tournamentID IS NULL)
 );
+
+CREATE INDEX idx_playerScore_player ON playerScore(playerID);
+CREATE INDEX idx_playerScore_session ON playerScore(sessionID);
+CREATE INDEX idx_playerActivity_player ON playerActivity(playerID);
+CREATE INDEX idx_player_session_session ON player_session(sessionID);
