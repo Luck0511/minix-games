@@ -1,3 +1,7 @@
+drop database minixgames_db;
+create database minixgames_db;
+use minixgames_db;
+
 CREATE TABLE `player` (
   `playerID` integer UNIQUE PRIMARY KEY AUTO_INCREMENT,
   `playerName` varchar(32) UNIQUE NOT NULL,
