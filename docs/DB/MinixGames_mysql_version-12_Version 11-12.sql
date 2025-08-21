@@ -1,13 +1,16 @@
-drop database minixgames_db;
-create database minixgames_db;
-use minixgames_db;
-
 CREATE TABLE `player` (
   `playerID` integer UNIQUE PRIMARY KEY AUTO_INCREMENT,
   `playerName` varchar(32) UNIQUE NOT NULL,
   `password` varchar(255) NOT NULL,
-  `registerDate` datetime DEFAULT (now()),
+  `registerDate` datetime,
   `isActive` boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE `playerScore` (
+  `scoreID` integer UNIQUE PRIMARY KEY AUTO_INCREMENT,
+  `score` integer NOT NULL,
+  `playerID` integer NOT NULL,
+  `sessionID` integer NOT NULL
 );
 
 CREATE TABLE `customGameList` (
@@ -15,7 +18,7 @@ CREATE TABLE `customGameList` (
   `listName` varchar(32) NOT NULL,
   `playerID` integer NOT NULL,
   `isPublic` boolean NOT NULL DEFAULT false,
-  `creation` datetime DEFAULT (now()),
+  `creation` datetime,
   `description` varchar(100)
 );
 
@@ -48,6 +51,7 @@ CREATE TABLE `player_session` (
 CREATE TABLE `session` (
   `sessionID` integer UNIQUE PRIMARY KEY AUTO_INCREMENT,
   `gameID` integer NOT NULL,
+  `winnerID` integer,
   `startTime` datetime NOT NULL,
   `endTime` datetime NOT NULL
 );
@@ -68,7 +72,7 @@ CREATE TABLE `session_tournament` (
 CREATE TABLE `tournament` (
   `tournamentID` integer UNIQUE PRIMARY KEY AUTO_INCREMENT,
   `tournamentName` varchar(32),
-  `gamesID` integer NOT NULL,
+  `winnerID` integer,
   `rounds` integer NOT NULL,
   `startTime` datetime NOT NULL,
   `endTime` datetime NOT NULL
@@ -84,6 +88,8 @@ CREATE TABLE `playerActivity` (
 );
 
 ALTER TABLE `player` COMMENT = 'store users';
+
+ALTER TABLE `playerScore` COMMENT = 'storing player scoring history - allow scoreboard';
 
 ALTER TABLE `customGameList` COMMENT = 'stores custom list of games created by players';
 
@@ -103,16 +109,11 @@ ALTER TABLE `session_tournament` COMMENT = 'junction table for many-to-many rela
 
 ALTER TABLE `tournament` COMMENT = 'torunaments between players';
 
-ALTER TABLE `playerActivity` COMMENT = 'stores player activities, either tournament or single game
-CONSTRAINT: (isTournament = true AND tournamentID IS NOT NULL AND sessionID IS NULL) 
-OR (isTournament = false AND sessionID IS NOT NULL AND tournamentID IS NULL)
-';
+ALTER TABLE `playerActivity` COMMENT = 'stores player activities, either tournament or single game';
 
 ALTER TABLE `session` ADD FOREIGN KEY (`gameID`) REFERENCES `miniGame` (`gameID`);
 
 ALTER TABLE `miniGame` ADD FOREIGN KEY (`gameType`) REFERENCES `gameType` (`typeID`);
-
-ALTER TABLE `tournament` ADD FOREIGN KEY (`gamesID`) REFERENCES `miniGame` (`gameID`);
 
 ALTER TABLE `playerActivity` ADD FOREIGN KEY (`tournamentID`) REFERENCES `tournament` (`tournamentID`);
 
@@ -138,9 +139,17 @@ ALTER TABLE `session_tournament` ADD FOREIGN KEY (`tournamentID`) REFERENCES `to
 
 ALTER TABLE `session_tournament` ADD FOREIGN KEY (`sessionID`) REFERENCES `session` (`sessionID`);
 
+ALTER TABLE `session` ADD FOREIGN KEY (`winnerID`) REFERENCES `player` (`playerID`);
+
+ALTER TABLE `tournament` ADD FOREIGN KEY (`winnerID`) REFERENCES `player` (`playerID`);
+
+ALTER TABLE `playerScore` ADD FOREIGN KEY (`playerID`) REFERENCES `player` (`playerID`);
+
+ALTER TABLE `playerScore` ADD FOREIGN KEY (`sessionID`) REFERENCES `session` (`sessionID`);
+
 ALTER TABLE playerActivity 
 ADD CONSTRAINT chk_activity_logic 
 CHECK (
     (isTournament = true AND tournamentID IS NOT NULL AND sessionID IS NULL) OR
     (isTournament = false AND sessionID IS NOT NULL AND tournamentID IS NULL)
-) ENFORCED;
+);
