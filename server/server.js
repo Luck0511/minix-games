@@ -5,12 +5,16 @@ import {server} from './src/app.js';
 import {appConfig} from "./src/config/config.js";
 import {validateConfig} from './src/config/config.js';
 import {testConnection} from './src/config/dbConfig.js';
+import {initializeModels} from "./src/models/index.js";
 
 const startServer = async () => {
     try{
         //test connection to database
         await testConnection();
         console.log('✅ Database checks ended successfully');
+        //initialize models
+        initializeModels();
+        console.log('✅ Model initialization')
 
         //check configuration
         validateConfig();
