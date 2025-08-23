@@ -10,7 +10,7 @@ const startServer = async () => {
     try{
         //test connection to database
         await testConnection();
-        console.log('✅ Database connected successfully');
+        console.log('✅ Database checks ended successfully');
 
         //check configuration
         validateConfig();
@@ -44,5 +44,5 @@ const startServer = async () => {
     }
 }
 startServer().then(()=>{
-    console.log('startup routine terminated');
+    console.log('======startup routine terminated======');
 });

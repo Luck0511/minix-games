@@ -24,7 +24,7 @@ export const appConfig = {
         port: getNumericEnv('DB_PORT', 3306),
         username: getRequiredEnv('DB_USERNAME', 'root'),
         password: getRequiredEnv('DB_PASSWORD'),
-        logging: getBooleanEnv('DB_LOGGING', false),
+        logging: console.log,
         pool: {
             max: getNumericEnv('DB_POOL_MAX', 10),
             min: getNumericEnv('DB_POOL_MIN', 0),
@@ -33,8 +33,8 @@ export const appConfig = {
         },
         define: {
             timestamps: true, // adds createdAt and updatedAt
-            underscored: true, // use snake_case for automatically added attributes
-            freezeTableName: true // don't pluralize table names
+            freezeTableName: true, // don't pluralize table names
+            underscored: false, //I'm not using snake_case
         }
     },
 
