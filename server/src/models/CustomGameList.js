@@ -4,40 +4,39 @@ import {sequelize} from "../config/dbConfig.js";
 import {DataTypes, Model} from "sequelize";
 
 
-//Player table definition
-export class Player extends Model {
+//CustomGameList table definition
+export class CustomGameList extends Model {
 }
-Player.init(
+CustomGameList.init(
     {
-        playerID: {
+        listID: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
             allowNull: false,
-            unique: true
         },
-        playerName: {
+        listName: {
             type: DataTypes.STRING(32),
             allowNull: false,
-            unique: true
         },
-        password: {
-            type: DataTypes.STRING,
+        playerID: {
+            type: DataTypes.INTEGER,
             allowNull: false,
         },
-        registerDate: {
+        isPublic: {
+            type: DataTypes.BOOLEAN,
+        },
+        creationDate: {
             type: DataTypes.DATE,
         },
-        isActive: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: true,
-            allowNull: false,
+        description: {
+            type: DataTypes.STRING(100),
         }
     },
     {
         sequelize,
-        tableName: 'player',
-        createdAt: 'registerDate', //createdAt will save creation date to 'registerDate' column
+        tableName: 'customgamelist',
+        createdAt: 'creationDate', //createdAt will save creation date to 'creationDate' column
         updatedAt: false
     }
 );
