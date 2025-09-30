@@ -12,3 +12,4 @@ other players in your favourite games?
 ***Minix Games*** was born to fill those empty minutes of waiting with fun and fast mini-games
 to play solo or to enjoy with together with your friends.
 ---
+
