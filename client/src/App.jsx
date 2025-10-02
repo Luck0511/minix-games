@@ -15,8 +15,6 @@ function App() {
     const [serverMessage, setServerMessage] = useState('');
     const [inputMessage, setInputMessage] = useState('');
 
-    const [formToggle, setFormToggle] = useState(false);
-
     // Send message to server
     const sendTestMessage = () => {
         console.log(socket, isConnected);
