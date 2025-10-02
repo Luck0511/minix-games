@@ -17,25 +17,25 @@ import {PlayerActivity} from "./PlayerActivity.js";
 import {Session_tournament} from "./Session_tournament.js";
 import {Tournament} from "./Tournament.js";
 
+//objet with all models and sequelize
+export const db = {
+    sequelize,
+    CustomGameList,
+    CustomList_minigame,
+    GameType,
+    MiniGame,
+    Player,
+    Player_session,
+    Player_tournament,
+    PlayerActivity,
+    PlayerScore,
+    Session,
+    Session_tournament,
+    Tournament,
+}
+
 export const initializeModels = ()=> {
-    //objet with all models and sequelize
-    const db = {
-        sequelize,
-        CustomGameList,
-        CustomList_minigame,
-        GameType,
-        MiniGame,
-        Player,
-        Player_session,
-        Player_tournament,
-        PlayerActivity,
-        PlayerScore,
-        Session,
-        Session_tournament,
-        Tournament,
-    }
     //define associations
     defineAssociations(db);
-
     return db;
 }
