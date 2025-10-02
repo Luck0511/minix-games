@@ -1,13 +1,12 @@
 //utility imports
 import {useEffect, useState} from 'react';
-import axios from "axios";
-
 //components & hooks
 import {useSocket} from "./context/Socket.ctx.jsx";
 import {LoginFormCmp} from "./components/LoginForm.cmp.jsx";
 
 //other imports
-import {SERVER_URL} from "./context/Socket.ctx.jsx"; //server url from .env
+import {SERVER_URL} from "./context/Socket.ctx.jsx";
+import {RegisterFormCmp} from "./components/RegisterForm.cmp.jsx"; //server url from .env
 
 function App() {
     //config
@@ -15,6 +14,8 @@ function App() {
     //states
     const [serverMessage, setServerMessage] = useState('');
     const [inputMessage, setInputMessage] = useState('');
+
+    const [formToggle, setFormToggle] = useState(false);
 
     // Send message to server
     const sendTestMessage = () => {
@@ -64,14 +65,13 @@ function App() {
                     Send Test Message
                 </button>
             </div>
-
             <div>
-                <h3>register form</h3>
-                <form onSubmit={registerUSer}>
-                    <input type="text" placeholder="username" name="playerName" id="regPlayerName"/>
-                    <input type="password" placeholder="password" name="password" id="regPswd"/>
-                    <button type="submit">Register</button>
-                </form>
+                <div>
+                    <LoginFormCmp />
+                </div>
+                <div>
+                    <RegisterFormCmp />
+                </div>
             </div>
 
             {/* Server Response */}

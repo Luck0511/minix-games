@@ -9,7 +9,7 @@ export const LoginFormCmp = () => {
     const [userName, setUserName] = useState();
     const [password, setPassword] = useState();
 
-    const sendFormData = (e)=>{
+    const sendFormData = (e) => {
         e.preventDefault();
         //save data in object
         const userData = {
@@ -17,32 +17,35 @@ export const LoginFormCmp = () => {
             password: password,
         }
         //send data through REST
-        if(userData.password && userData.playerName){
+        if (userData.password && userData.playerName) {
             console.log(userData);
             //call login request service
             loginRequest(userData);
-        }else{
+        } else {
             console.log('register data are missing');
         }
     }
 
     return (
-        <form onSubmit={sendFormData}>
-            <label>
-                UserName:
-                <input id={'userName'}
-                       name={'userName'}
-                       placeholder={'Insert your userName'}
-                       onChange={(e) => setUserName(e.target.value)}/>
-            </label>
-            <label>
-                Password:
-                <input id={'password'}
-                       name={'password'}
-                       placeholder={'Insert your password'}
-                       onChange={(e) => setPassword(e.target.value)}/>
-            </label>
-            <button type="submit" disabled={(!userName && !password)}>Login</button>
-        </form>
+        <>
+            <h3>Login Form</h3>
+            <form onSubmit={sendFormData}>
+                <label>
+                    UserName:
+                    <input id={'userName'}
+                           name={'userName'}
+                           placeholder={'Insert your userName'}
+                           onChange={(e) => setUserName(e.target.value)}/>
+                </label>
+                <label>
+                    Password:
+                    <input id={'password'}
+                           name={'password'}
+                           placeholder={'Insert your password'}
+                           onChange={(e) => setPassword(e.target.value)}/>
+                </label>
+                <button type="submit" disabled={(!userName && !password)}>Login</button>
+            </form>
+        </>
     );
 };
