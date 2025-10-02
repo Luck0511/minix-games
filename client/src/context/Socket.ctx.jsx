@@ -3,9 +3,10 @@
 //utility import
 import React, {createContext, useContext, useEffect, useState} from "react";
 import {io} from "socket.io-client";
+//other imports
+import {SERVER_URL} from "../main.jsx"; //server url from .env
 
-// Server connection
-const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+// Server socket connection
 const socket = io(SERVER_URL);
 
 const SocketCtx = createContext(undefined)

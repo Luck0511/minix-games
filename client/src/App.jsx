@@ -1,8 +1,13 @@
-//utility import
+//utility imports
 import {useEffect, useState} from 'react';
-//types import
+import axios from "axios";
+
+//components & hooks
 import {useSocket} from "./context/Socket.ctx.jsx";
 import {LoginFormCmp} from "./components/LoginForm.cmp.jsx";
+
+//other imports
+import {SERVER_URL} from "./main.jsx"; //server url from .env
 
 function App() {
     //config
@@ -32,6 +37,12 @@ function App() {
         }
     }, [])
 
+    const registerUSer = (regForm)=>{
+        console.table(regForm)
+        axios.post(SERVER_URL, JSON.stringify(regForm)).then(res=>{
+            console.log(res.data)
+        })
+    }
 
     return (
         <div>
@@ -59,6 +70,15 @@ function App() {
                     disabled={(isConnected && !inputMessage)}>
                     Send Test Message
                 </button>
+            </div>
+
+            <div>
+                <h3>register form</h3>
+                <form onSubmit={registerUSer}>
+                    <input type="text" placeholder="username" />
+                    <input type="password" placeholder="password" />
+                    <button type="submit">Register</button>
+                </form>
             </div>
 
             {/* Server Response */}
