@@ -7,7 +7,7 @@ import {useSocket} from "./context/Socket.ctx.jsx";
 import {LoginFormCmp} from "./components/LoginForm.cmp.jsx";
 
 //other imports
-import {SERVER_URL} from "./main.jsx"; //server url from .env
+import {SERVER_URL} from "./context/Socket.ctx.jsx"; //server url from .env
 
 function App() {
     //config
@@ -35,13 +35,25 @@ function App() {
         return ()=>{
             socket.off('test-response');
         }
-    }, [])
+    })
 
-    const registerUSer = (regForm)=>{
-        console.table(regForm)
-        axios.post(SERVER_URL, JSON.stringify(regForm)).then(res=>{
-            console.log(res.data)
-        })
+    const registerUSer = (event)=>{
+        event.preventDefault();
+        const regFormData = new FormData(event.target);
+        const playerName = regFormData.get('playerName');
+        const password = regFormData.get('password');
+        console.log('Registering user:', {playerName, password});
+
+        console.table(regFormData);
+        try {
+            axios.post(`${SERVER_URL}/registerPlayer`, {playerName: playerName, password: password})
+                .then(res => {
+                    console.log("request succesfull", res.data)
+                }
+            )
+        }catch (err){
+            console.error(err)
+        }
     }
 
     return (
@@ -75,8 +87,8 @@ function App() {
             <div>
                 <h3>register form</h3>
                 <form onSubmit={registerUSer}>
-                    <input type="text" placeholder="username" />
-                    <input type="password" placeholder="password" />
+                    <input type="text" placeholder="username" name="playerName" id="regPlayerName"/>
+                    <input type="password" placeholder="password" name="password" id="regPswd"/>
                     <button type="submit">Register</button>
                 </form>
             </div>
