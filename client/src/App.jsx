@@ -37,25 +37,6 @@ function App() {
         }
     })
 
-    const registerUSer = (event)=>{
-        event.preventDefault();
-        const regFormData = new FormData(event.target);
-        const playerName = regFormData.get('playerName');
-        const password = regFormData.get('password');
-        console.log('Registering user:', {playerName, password});
-
-        console.table(regFormData);
-        try {
-            axios.post(`${SERVER_URL}/registerPlayer`, {playerName: playerName, password: password})
-                .then(res => {
-                    console.log("request succesfull", res.data)
-                }
-            )
-        }catch (err){
-            console.error(err)
-        }
-    }
-
     return (
         <div>
             <h1>🎮 Multiplayer Game Client</h1>

@@ -1,13 +1,13 @@
+//utility imports
 import {useState} from "react";
-import {useSocket} from "../context/Socket.ctx.jsx";
+
+//services imports
+import {loginRequest} from "../services/auth.js";
 
 export const LoginFormCmp = () => {
-    //states for login
-    const [userName, setUserName] = useState('');
-    const [password, setPassword] = useState('');
-
-    //socket from context
-    const {socket, isConnected} = useSocket()
+    //states for login info
+    const [userName, setUserName] = useState();
+    const [password, setPassword] = useState();
 
     const sendFormData = (e)=>{
         e.preventDefault();
@@ -16,22 +16,13 @@ export const LoginFormCmp = () => {
             playerName: userName,
             password: password,
         }
-        //check connection
-        if(!isConnected){
-            console.log('Not connected to the server');
-            return
-        }
-
-        //send data
+        //send data through REST
         if(userData.password && userData.playerName){
             console.log(userData);
-            socket.emit('user-info', {
-                withCredentials: true,
-                message: userData,
-                timestamp: new Date().toISOString(),
-            })
+            //call login request service
+            loginRequest(userData);
         }else{
-            console.log('Info empty')
+            console.log('register data are missing');
         }
     }
 
@@ -51,7 +42,7 @@ export const LoginFormCmp = () => {
                        placeholder={'Insert your password'}
                        onChange={(e) => setPassword(e.target.value)}/>
             </label>
-            <button type="submit" disabled={!isConnected && (!userName && !password)}>Login</button>
+            <button type="submit" disabled={(!userName && !password)}>Login</button>
         </form>
     );
 };
