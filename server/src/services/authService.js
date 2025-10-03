@@ -1,0 +1,48 @@
+//utility imports
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+//other imports
+import {appConfig} from "../config/config.js";
+
+export const passwordHash = async (password) => {
+    const saltRounds = appConfig.auth.bcryptRounds
+    return await bcrypt.hash(password, saltRounds);
+}
+
+export const verifyPassword = async (password, hashedPassword) => {
+    return await bcrypt.compare(password, hashedPassword);
+}
+
+//generate JWT token
+export const generateJWT = (payload) => {
+    try{
+        const token = jwt.sign(payload, appConfig.auth.jwtSecret, {expiresIn: appConfig.auth.jwtExpires});
+        return token
+    }catch(err){
+        console.error('Error generating JWT:', err);
+        return null;
+    }
+}
+
+//middleware to verify JWT in incoming requests
+export const verifyJWT = (req, res, next) => {
+    // get token from header
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    //error on empty token
+    if (!token) {
+        return res.status(401).json({ error: 'Access token required' });
+    }
+
+    try {
+        // Verify token
+        const decoded = jwt.verify(token, appConfig.auth.jwtSecret);
+        req.user = decoded; // add user info to request, allow access next
+        next();
+    } catch (error) {
+        return res.status(403).json({ error: 'Invalid or expired token' });
+    }
+}
+
+
