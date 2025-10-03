@@ -16,8 +16,7 @@ export const verifyPassword = async (password, hashedPassword) => {
 //generate JWT token
 export const generateJWT = (payload) => {
     try{
-        const token = jwt.sign(payload, appConfig.auth.jwtSecret, {expiresIn: appConfig.auth.jwtExpires});
-        return token
+        return jwt.sign(payload, appConfig.auth.jwtSecret, {expiresIn: appConfig.auth.jwtExpires});
     }catch(err){
         console.error('Error generating JWT:', err);
         return null;
@@ -36,9 +35,8 @@ export const verifyJWT = (req, res, next) => {
     }
 
     try {
-        // Verify token
-        const decoded = jwt.verify(token, appConfig.auth.jwtSecret);
-        req.user = decoded; // add user info to request, allow access next
+        // Verify token and add user info to request, allow access next
+        req.user = jwt.verify(token, appConfig.auth.jwtSecret);
         next();
     } catch (error) {
         return res.status(403).json({ error: 'Invalid or expired token' });
