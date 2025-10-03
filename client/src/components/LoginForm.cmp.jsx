@@ -29,7 +29,7 @@ export const LoginFormCmp = () => {
     return (
         <>
             <h3>Login Form</h3>
-            <form onSubmit={sendFormData}>
+            <form onSubmit={sendFormData}>\
                 <label>
                     UserName:
                     <input id={'userName'}
