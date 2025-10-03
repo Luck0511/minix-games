@@ -14,7 +14,16 @@ export function loginRequest(credentials) {
 
 export function registerRequest(credentials) {
     try {
-        axios.post(`${SERVER_URL}/register`, credentials)
+        const {playerName, password} = credentials;
+        if (!playerName || !password) {
+            console.error('Missing registration credentials');
+            return;
+        }
+        if (password.length < 8) {
+            console.error('Password must be at least 8 characters long');
+            return;
+        }
+        axios.post(`${SERVER_URL}/register`, {playerName, password})
             .then((response) => {
                 console.log("request successful", response.data)
             })
