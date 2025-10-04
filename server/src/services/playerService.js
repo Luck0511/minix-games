@@ -32,26 +32,24 @@ export const getPlayerByName = async (username) => {
 
 export const registerNewPlayer = async (playerName, password) => {
     if(!playerName || !password){
-        return 400; //{message: 'Player name and password are required'}
+        return {opStatus: 400}; //{message: 'Player name and password are required'}
     }
     try{
         //check if playerName is already taken
-        const existingPlayer = await Player.findOne({
-            where: {
-                playerName
-            }
-        });
+        const existingPlayer = await getPlayerByName(playerName);
         if(existingPlayer){
-            return 409 //{message: 'A Player with this name already exists'};
+            console.log("A player with this name already exists: ", existingPlayer);
+            return {opStatus: 409} //{message: 'A Player with this name already exists'};
         }else {
             const hashedPassword = await passwordHash(password)
-            const newPlayer = await Player.create({playerName, hashedPassword});
+            console.log("hashed password", hashedPassword)
+            const newPlayer = await Player.create({playerName: playerName, password: hashedPassword});
             return {opStatus: 200, newPlayer: newPlayer}
             //{message: 'Player profile created successfully', playerInfo: newPlayer});
         }
     }catch (err){
         console.error('Error in player registration:', err)
-        return 500 //{message: 'Internal server error'};
+        return {opStatus: 500} //{message: 'Internal server error'};
     }
 }
 

@@ -60,9 +60,11 @@ router.post('/register', async (req, res) => {
         case 409: {
             return res.status(409).json({message: 'A Player with this name already exists'});
         }
-        case 500:
+        case 500: {
+            return res.status(500).json({message: 'There has been an internal server error'});
+        }
         default: {
-            return res.status(500).json({message: 'Internal server error'});
+            return res.status(520).json({message: 'Generic unknown error'});
         }
     }
 })
