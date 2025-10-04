@@ -6,6 +6,8 @@ import {io} from "socket.io-client";
 
 //server URL
 export const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+//server APIs URL
+export const API_URL = import.meta.env.VITE_API_URL;
 
 // Server socket connection
 const socket = io(SERVER_URL);

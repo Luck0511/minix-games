@@ -6,7 +6,7 @@ export const RegisterFormCmp = () => {
     const [userName, setUserName] = useState();
     const [password, setPassword] = useState();
 
-    const sendFormData = (e) => {
+    const sendFormData = async (e) => {
         e.preventDefault();
         //save data in object
         const userData = {
@@ -15,9 +15,10 @@ export const RegisterFormCmp = () => {
         }
         //send data through REST
         if (userData.password && userData.playerName) {
-            console.log(userData);
+            console.log("initializing register request: ", userData);
             //call register request service
-            registerRequest(userData);
+            await registerRequest(userData);
+            console.log("register request completed: ", userData);
         } else {
             console.log('register data are missing');
         }

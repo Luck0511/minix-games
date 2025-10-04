@@ -1,9 +1,9 @@
 import axios from "axios";
-import {SERVER_URL} from "../context/Socket.ctx.jsx";
+import {API_URL} from "../context/Socket.ctx.jsx";
 
 export function loginRequest(credentials) {
     try{
-        axios.post(SERVER_URL, credentials)
+        axios.post(`${API_URL}/login`, credentials)
             .then((response) => {
                 console.log("request successful", response.data)
             })
@@ -23,7 +23,7 @@ export function registerRequest(credentials) {
             console.error('Password must be at least 8 characters long');
             return;
         }
-        axios.post(`${SERVER_URL}/register`, {playerName, password})
+        axios.post(`${API_URL}/register`, {playerName, password})
             .then((response) => {
                 console.log("request successful", response.data)
             })

@@ -5,7 +5,6 @@ import {useSocket} from "./context/Socket.ctx.jsx";
 import {LoginFormCmp} from "./components/LoginForm.cmp.jsx";
 
 //other imports
-import {SERVER_URL} from "./context/Socket.ctx.jsx";
 import {RegisterFormCmp} from "./components/RegisterForm.cmp.jsx"; //server url from .env
 
 function App() {
