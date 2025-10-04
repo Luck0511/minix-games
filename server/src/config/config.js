@@ -42,6 +42,7 @@ export const appConfig = {
     auth:{
         jwtSecret: getRequiredEnv('JWT_SECRET'),
         jwtExpires: getRequiredEnv('JWT_EXPIRES_IN'),
+        cookieMaxAge: getNumericEnv('COOKIE_MAX_AGE', 86400000), //1 day
         bcryptRounds: getNumericEnv('BCRYPT_ROUNDS', 12)
     }
 }
