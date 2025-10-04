@@ -2,7 +2,7 @@
 import express from "express";
 //other imports
 import {getAllPlayers, getPlayerByName, registerNewPlayer} from "../../services/playerService.js";
-import {generateJWT, verifyJWT} from "../../services/authService.js";
+import {generateJWT, verifyJWT, setAuthCookie} from "../../services/authService.js";
 
 //set up a router to manage all endpoints
 const router = express.Router();
@@ -26,7 +26,7 @@ router.get('/getPlayer', async (req, res) => {
     res.json({message:'Player found', playerInfo: player});
 })
 
-//Method: POST - register new player - must pass playerName and password in body
+//Method: POST - REGISTER new player - must pass playerName and password in body
 router.post('/register', async (req, res) => {
     const {playerName, password} = req.body;
 
@@ -44,7 +44,9 @@ router.post('/register', async (req, res) => {
     //status code switch
     switch(opStatus){
         case 200: {
+            //generate a token to include with response and cookie
             const token = generateJWT({playerID: newPlayer.playerID, playerName: newPlayer.playerName});
+            setAuthCookie(res, token); //adds cookie with token to response
             return res.status(200).json({
                 message: 'Player profile created successfully',
                 token: token,
@@ -76,12 +78,3 @@ router.post('/login', verifyJWT ,async (req, res) => {
 
 //export the router to be used in app.js
 export default router;
-
-/*//!!! TEST SEEDING
-router.get('/sampleseeding', (req, res) => {
-    const {Player} = db;
-    Player.create({playerName: 'sampleUser1', password: 'hashedpassword123'}).then(()=>{
-        console.log('Created sample Player')
-    })
-    res.json("executed sample seeding");
-})*/
