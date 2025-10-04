@@ -1,7 +1,10 @@
+//utility imports
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
+//other imports
+import router from './routes/v1/endpointsV1.js';
 
 export const app = express();
 export const server = createServer(app);
@@ -15,6 +18,7 @@ const io = new Server(server, {
 // middleware setup --> all req pass here before
 app.use(cors()); //allow cross-origin request, mainly for localhost testing
 app.use(express.json()); //parse JSON from requests-response
+app.use('/api/v1', router); //router mounting allowing access to API endpoints
 
 // APIS --> ENDPOINTS MANAGEMENT
 app.get('/', (req, res) => {

@@ -1,18 +1,20 @@
 //utility imports
-import {app} from "server/src/app.js";
-
+import express from "express";
 //other imports
-import {getAllPlayers, getPlayerByName, registerNewPlayer} from "server/src/services/playerService.js";
-import {generateJWT, verifyJWT} from "server/src/services/authService.js";
+import {getAllPlayers, getPlayerByName, registerNewPlayer} from "../../services/playerService.js";
+import {generateJWT, verifyJWT} from "../../services/authService.js";
+
+//set up a router to manage all endpoints
+const router = express.Router();
 
 //Method: GET - returns all players in DB
-app.get('/allplayers', async (req, res) => {
+router.get('/allplayers', async (req, res) => {
     const allPlayers = await getAllPlayers();
     res.json({allPlayers});
 })
 
 //Method: GET - returns player info by playerName query param
-app.get('/getPlayer', async (req, res) => {
+router.get('/getPlayer', async (req, res) => {
     const playerName = req.query.playerName;
     if(!playerName){
         return res.status(400).json({message: 'Player name is required in query params'});
@@ -25,7 +27,7 @@ app.get('/getPlayer', async (req, res) => {
 })
 
 //Method: POST - register new player - must pass playerName and password in body
-app.post('/register', async (req, res) => {
+router.post('/register', async (req, res) => {
     const {playerName, password} = req.body;
 
     //check missing credentials in request body
@@ -66,13 +68,15 @@ app.post('/register', async (req, res) => {
 })
 
 //Method: POST - login player - must pass playerName and password in body
-app.post('/login', verifyJWT ,async (req, res) => {
+router.post('/login', verifyJWT ,async (req, res) => {
 
 })
 
+//export the router to be used in app.js
+export default router;
 
 /*//!!! TEST SEEDING
-app.get('/sampleseeding', (req, res) => {
+router.get('/sampleseeding', (req, res) => {
     const {Player} = db;
     Player.create({playerName: 'sampleUser1', password: 'hashedpassword123'}).then(()=>{
         console.log('Created sample Player')
