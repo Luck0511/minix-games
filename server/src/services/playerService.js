@@ -12,6 +12,23 @@ import {passwordHash, verifyPassword} from "./authService.js";
 export const basePlayerValidation = (userData, res) => {
     const {playerName, password} = userData;
 
+    if(!playerName || !password){
+        return res.status(400).json({message: 'Player name and password are required'});
+    }
+    //check password length
+    if(password.length < 8){
+        return res.status(400).json({message: 'Password must be at least 8 characters long'});
+    }
+    //set a maximum length for playerName
+    if(playerName.length > 32){
+        return res.status(400).json({message: 'Player name must be less than or 32 characters long'});
+    }
+}
+
+/**
+ * Find and returns all registered players
+ * @returns {Promise<Player[]> | null} Player array promise containing all players registered in DB
+ **/
 export const getAllPlayers = async () => {
     try{
         const {Player} = db;
@@ -79,5 +96,22 @@ export const registerNewPlayer = async (playerName, password) => {
  * @returns {{opStatus: int, loggedPlayer:?Player}} object with final status and nullable Player object
  **/
 export const loginPlayer = async (playerName, password) => {
+    if(!playerName || !password){
+        return {opStatus: 400}; //{message: 'Player name and password are required'}
+    }
 
+    try{
+        const player = await getPlayerByName(playerName);
+        if(!player){
+            return {opStatus: 401}; //{message: 'Player not found'};
+        }
+        const isPasswordValid = await verifyPassword(password, player.password);
+        if(isPasswordValid){
+            return {opStatus: 200, loggedPlayer: player}
+            //{message: 'Player found, credentials correct, logging into account'}
+        }
+    }catch(err){
+        console.error('Error in player login:', err)
+        return {opStatus: 500} //{message: 'Internal server error'};
+    }
 }
