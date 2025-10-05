@@ -9,15 +9,15 @@ import {initializeModels} from "./src/models/index.js";
 
 const startServer = async () => {
     try{
+        validateConfig();
+        console.log('✅ Configuration validation passed');
         //test connection to database
         await testConnection();
         console.log('✅ Database checks ended successfully');
         //initialize models
         initializeModels();
-        console.log('✅ Model initialization')
-
+        console.log('✅ Model initialization complete')
         //check configuration
-        validateConfig();
 
         //start server
         server.listen(appConfig.app.port, ()=>{

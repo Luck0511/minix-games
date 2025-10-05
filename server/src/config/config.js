@@ -53,7 +53,11 @@ export const appConfig = {
 export const validateConfig = ()=>{
     //minimum required keys with existing value
     const requiredInProd = [
+        'NODE_ENV',
         'JWT_SECRET',
+        'JWT_EXPIRES_IN',
+        'COOKIE_MAX_AGE',
+        'BCRYPT_ROUNDS',
         'DB_NAME',
         'DB_USERNAME',
         'DB_PASSWORD',
@@ -65,7 +69,6 @@ export const validateConfig = ()=>{
                 throw new Error(`${key} is required in production environment`)
             }
         }
-        //additional checks
+        //additional checks...
     }
-    console.log('✅ Configuration validation passed');
 };
