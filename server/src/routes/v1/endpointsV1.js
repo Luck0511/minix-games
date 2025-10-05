@@ -38,6 +38,10 @@ router.post('/register', async (req, res) => {
     if(password.length < 8){
         return res.status(400).json({message: 'Password must be at least 8 characters long'});
     }
+    //set a maximum length for playerName
+    if(playerName.length > 32){
+        return res.status(400).json({message: 'Player name must be less than or 32 characters long'});
+    }
 
     //await player creation and returns status code, if success, also returns new player object
     const {opStatus, newPlayer} = await registerNewPlayer(playerName, password);
