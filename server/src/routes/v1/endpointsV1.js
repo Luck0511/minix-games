@@ -1,8 +1,8 @@
 //utility imports
 import express from "express";
 //other imports
-import {getAllPlayers, getPlayerByName, registerNewPlayer} from "../../services/playerService.js";
-import {generateJWT, verifyJWT, setAuthCookie} from "../../services/authService.js";
+import {getAllPlayers, getPlayerByName, registerNewPlayer, basePlayerValidation} from "../../services/playerService.js";
+import {generateJWT, setAuthCookie} from "../../services/authService.js";
 
 //set up a router to manage all endpoints
 const router = express.Router();
@@ -30,18 +30,8 @@ router.get('/getPlayer', async (req, res) => {
 router.post('/register', async (req, res) => {
     const {playerName, password} = req.body;
 
-    //check missing credentials in request body
-    if(!playerName || !password){
-        return res.status(400).json({message: 'Player name and password are required'});
-    }
-    //check password length
-    if(password.length < 8){
-        return res.status(400).json({message: 'Password must be at least 8 characters long'});
-    }
-    //set a maximum length for playerName
-    if(playerName.length > 32){
-        return res.status(400).json({message: 'Player name must be less than or 32 characters long'});
-    }
+    //execute base validation on name and password
+    basePlayerValidation({playerName, password}, res);
 
     //await player creation and returns status code, if success, also returns new player object
     const {opStatus, newPlayer} = await registerNewPlayer(playerName, password);
@@ -76,7 +66,11 @@ router.post('/register', async (req, res) => {
 })
 
 //Method: POST - login player - must pass playerName and password in body
-router.post('/login', verifyJWT ,async (req, res) => {
+router.post('/login',async (req, res) => {
+    const {playerName, password} = req.body;
+
+    //execute base validation on name and password
+    basePlayerValidation({playerName, password}, res);
 
 })
 

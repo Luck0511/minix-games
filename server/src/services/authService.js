@@ -6,7 +6,12 @@ import {appConfig} from "../config/config.js";
 
 /*==== COOKIES ====*/
 
-    //sets cookie to include with response, secure and dynamic based on .env file and production env
+    /**
+     * Sets cookie to include with response, secure and dynamic based on .env file and production env
+     * @param res response reference
+     * @param {String} token JWT token
+     * @returns ads the cookies to server response
+     **/
     export const setAuthCookie = (res, token) => {
         const isProduction = appConfig.app.env === 'production';
 
@@ -21,12 +26,22 @@ import {appConfig} from "../config/config.js";
 
 /*==== PASSWORDS ====*/
 
-    //hashes password
+    /**
+     * Hashes password given based on server environment
+     * @param {String} password non hashed password
+     * @returns {Promise<void|any>}
+     **/
     export const passwordHash = async (password) => {
         const saltRounds = appConfig.auth.bcryptRounds
         return await bcrypt.hash(password, saltRounds);
     }
-    //verifies password hashed and input password
+
+    /**
+     * verifies password hashed and input password using async bcrypt compare to avoid blocking app
+     * @param {String} password non hashed password by user input
+     * @param {String} hashedPassword hashed password retrieved by DB
+     * @returns {Promise<Boolean>} true or false based on password matching
+     **/
     export const verifyPassword = async (password, hashedPassword) => {
         return await bcrypt.compare(password, hashedPassword);
     }
@@ -34,7 +49,11 @@ import {appConfig} from "../config/config.js";
 
 /*==== JWT TOKES ====*/
 
-    //generate JWT token
+    /**
+     * Generate JWT token used for register and login
+     * @param {{}} payload non hashed password by user input
+     * @returns {String} JWT token in string format
+     **/
     export const generateJWT = (payload) => {
         try{
             return jwt.sign(payload, appConfig.auth.jwtSecret, {expiresIn: appConfig.auth.jwtExpires});
@@ -44,7 +63,13 @@ import {appConfig} from "../config/config.js";
         }
     }
 
-    //middleware to verify JWT in incoming requests
+    /**
+     * Middleware to verify JWT in incoming requests --> to use for protected routes that needs access control
+     * @param req request reference
+     * @param res response reference
+     * @param next next middleware/handler reference
+     * @returns sets response status code if any errors are detected
+     **/
     export const verifyJWT = (req, res, next) => {
         // get token from header
         const authHeader = req.headers['authorization'];
