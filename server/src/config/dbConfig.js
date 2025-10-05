@@ -22,7 +22,7 @@ export const testConnection = async ()=>{
 export const synchronizeDB = async () => {
     try{
         //synchronize DB to models
-        await sequelize.sync({alter:true});
+        await sequelize.sync({force: appConfig.app.env === 'development'});//forcing if is in development env
         console.log('✅ Database synchronized successfully.');
     }catch(error){
         console.error('❌ Database synchronization failed: ', error);
