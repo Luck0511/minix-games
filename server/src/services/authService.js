@@ -43,7 +43,19 @@ import {appConfig} from "../config/config.js";
      * @returns {Promise<Boolean>} true or false based on password matching
      **/
     export const verifyPassword = async (password, hashedPassword) => {
-        return await bcrypt.compare(password, hashedPassword);
+        try{
+            const match = await bcrypt.compare(password, hashedPassword);
+            if (match) {
+                //passwords matches
+                return true;
+            } else {
+                //passwords do not match
+                return false;
+            }
+        }catch(err){
+            console.error('Error comparing passwords: ', err);
+            return false;
+        }
     }
 
 
