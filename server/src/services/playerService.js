@@ -65,7 +65,7 @@ export const getPlayerByName = async (playerName) => {
 * Register a new player by creating a new row in DB
 * @param {String} playerName registered player name
 * @param {String} password registered password
-* @returns {{opStatus: int, newPlayer:?Player}} object with final status and nullable Player object
+* @returns {Promise<{opStatus: int, newPlayer:Player?}>} object with final status and nullable Player object
 **/
 export const registerNewPlayer = async (playerName, password) => {
     if(!playerName || !password){
@@ -93,22 +93,27 @@ export const registerNewPlayer = async (playerName, password) => {
  * Login logic for system, searches existing match in DB and verify password
  * @param {String} playerName registered player name
  * @param {String} password registered password
- * @returns {{opStatus: int, loggedPlayer:?Player}} object with final status and nullable Player object
+ * @returns {Promise<{opStatus: number, loggedPlayer:Player?}>} object with final status and nullable Player object
  **/
 export const loginPlayer = async (playerName, password) => {
     if(!playerName || !password){
         return {opStatus: 400}; //{message: 'Player name and password are required'}
     }
-
     try{
+        //search for player by name
         const player = await getPlayerByName(playerName);
+        //return error code if player not found
         if(!player){
-            return {opStatus: 401}; //{message: 'Player not found'};
+            return {opStatus: 404}; //{message: 'Player not found'};
         }
+        //match the passwords
         const isPasswordValid = await verifyPassword(password, player.password);
+        //return code 200 success if password matches
         if(isPasswordValid){
             return {opStatus: 200, loggedPlayer: player}
             //{message: 'Player found, credentials correct, logging into account'}
+        }else{
+            return {opStatus: 401}; //{message: 'Wrong password'};
         }
     }catch(err){
         console.error('Error in player login:', err)
