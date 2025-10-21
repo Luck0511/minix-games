@@ -9,7 +9,7 @@ APP_URL="##frontend_production_url##"
 # Database
 DB_DATABASE=minixdb
 DB_DIALECT=postgres
-DB_HOST="postgresql://neondb_owner:npg_AOU0ktjsvRJ9@ep-flat-fire-ag5yxyui-pooler.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require"
+DB_HOST=##productionDB_Hosturl##
 DB_PORT=3306
 DB_USERNAME=##productionDB_username##
 DB_PASSWORD=##productionDB_password##
