@@ -5,7 +5,27 @@ import {Sequelize} from "sequelize";
 import {appConfig} from './config.js'
 
 //Sequelize instance
-export const sequelize = new Sequelize(appConfig.database);
+export const sequelize = new Sequelize(
+    appConfig.database.database,
+    appConfig.database.username,
+    appConfig.database.password,
+    {
+        host: appConfig.database.host,
+        port: appConfig.database.port,
+        dialect: appConfig.database.dialect,
+        logging: appConfig.database.logging,
+        pool: appConfig.database.pool,
+        define: appConfig.database.define,
+        ...(appConfig.database.dialect === 'postgres' && {
+            dialectOptions: {
+                ssl: {
+                    require: true,
+                    rejectUnauthorized: false
+                }
+            }
+        })
+    }
+);
 
 export const testConnection = async ()=>{
     try{

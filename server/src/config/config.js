@@ -3,12 +3,13 @@ import {getRequiredEnv, getBooleanEnv, getNumericEnv} from '../utils/envHelpers.
 
 //dotenv loader import
 import dotenv from 'dotenv';
+
 dotenv.config();
 
 //application config
 export const appConfig = {
     //Application config options
-    app:{
+    app: {
         name: 'MinixGames',
         env: getRequiredEnv('NODE_ENV'),
         port: getNumericEnv('PORT', 3000),
@@ -17,19 +18,20 @@ export const appConfig = {
     },
 
     //Database config options
-    database:{
+    database: {
         database: getRequiredEnv('DB_DATABASE'),
-        dialect: 'mysql',
-        host: getRequiredEnv('DB_HOST'),
-        port: getNumericEnv('DB_PORT', 3306),
         username: getRequiredEnv('DB_USERNAME', 'root'),
         password: getRequiredEnv('DB_PASSWORD'),
-        logging: console.log,
+        host: getRequiredEnv('DB_HOST'),
+        port: getNumericEnv('DB_PORT', 3306),
+        dialect: getRequiredEnv('DB_DIALECT', 'mysql'), //mysql (dev), postgres (prod)
+        logging:
+        console.log,
         pool: {
-            max: getNumericEnv('DB_POOL_MAX', 10),
-            min: getNumericEnv('DB_POOL_MIN', 0),
-            acquire: getNumericEnv('DB_POOL_ACQUIRE', 30000),
-            idle: getNumericEnv('DB_POOL_IDLE', 10000)
+                max: getNumericEnv('DB_POOL_MAX', 5),
+                min: getNumericEnv('DB_POOL_MIN', 0),
+                acquire: getNumericEnv('DB_POOL_ACQUIRE', 30000),
+                idle: getNumericEnv('DB_POOL_IDLE', 10000)
         },
         define: {
             timestamps: true, // adds createdAt and updatedAt
@@ -39,7 +41,7 @@ export const appConfig = {
     },
 
     //Authentication and security
-    auth:{
+    auth: {
         jwtSecret: getRequiredEnv('JWT_SECRET'),
         jwtExpires: getRequiredEnv('JWT_EXPIRES_IN'),
         cookieMaxAge: getNumericEnv('COOKIE_MAX_AGE', 86400000), //1 day
@@ -50,7 +52,7 @@ export const appConfig = {
 /**
  * #### Validates app configuration for production environment
  **/
-export const validateConfig = ()=>{
+export const validateConfig = () => {
     //minimum required keys with existing value
     const requiredInProd = [
         'NODE_ENV',
@@ -63,9 +65,9 @@ export const validateConfig = ()=>{
         'DB_PASSWORD',
     ]
     //check if key value exist
-    if(appConfig.app.env === 'production'){
-        for(const key of requiredInProd){
-            if(!process.env[key]){
+    if (appConfig.app.env === 'production') {
+        for (const key of requiredInProd) {
+            if (!process.env[key]) {
                 throw new Error(`${key} is required in production environment`)
             }
         }
