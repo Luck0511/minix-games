@@ -1,0 +1,28 @@
+# environment variables for production environment
+
+# APP
+NODE_ENV=production
+HOST=##backend_production_host##
+PORT=##backend_production_port##
+APP_URL="##frontend_production_url##"
+
+# Database
+DB_DATABASE=minixdb
+DB_DIALECT=postgres
+DB_HOST="postgresql://neondb_owner:npg_AOU0ktjsvRJ9@ep-flat-fire-ag5yxyui-pooler.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require"
+DB_PORT=3306
+DB_USERNAME=##productionDB_username##
+DB_PASSWORD=##productionDB_password##
+DB_LOGGING=false
+
+DB_POOL_MAX=10
+DB_POOL_MIN=0
+DB_POOL_ACQUIRE=30000
+DB_POOL_IDLE=10000
+
+# Security (JWT+bcrypt)
+JWT_SECRET=##your_production_jwt_secret_key##
+     # 7 days jwt and cookies expiration
+JWT_EXPIRES_IN=7d
+COOKIE_MAX_AGE=604800000
+BCRYPT_ROUNDS=12

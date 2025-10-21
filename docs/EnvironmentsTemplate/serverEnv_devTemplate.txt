@@ -1,0 +1,28 @@
+# environment variables for local development
+
+# APP
+NODE_ENV=development
+PORT=3000
+HOST=localhost
+APP_URL="http://localhost:3000"
+
+# Database
+DB_DATABASE=minixgames_db
+DB_DIALECT=mysql
+DB_HOST=localhost
+DB_PORT=3306
+DB_USERNAME=root
+DB_PASSWORD=1234
+DB_LOGGING=false
+
+DB_POOL_MAX=10
+DB_POOL_MIN=0
+DB_POOL_ACQUIRE=30000
+DB_POOL_IDLE=10000
+
+# Security (JWT+bcrypt)
+JWT_SECRET=6e87f26c56ab1009c0ce96e6b750c47b789ceb77a9c1e407734979cd1f81fbf43340c1dd3c2cc1235e1ca22e82bdcab71a9cda107346bfe731f50b27b68386ab
+     # 7 days jwt and cookies expiration
+JWT_EXPIRES_IN=7d
+COOKIE_MAX_AGE=604800000
+BCRYPT_ROUNDS=12
