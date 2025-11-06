@@ -1,6 +1,5 @@
 // controller for player related operation trough API
 import {db} from '../models/index.js';
-import {Player} from "../models/Player.js";
 import {passwordHash, verifyPassword} from "./authService.js";
 
 /**
