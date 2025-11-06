@@ -6,9 +6,14 @@ import {appConfig} from "./src/config/config.js";
 import {validateConfig} from './src/config/config.js';
 import {testConnection} from './src/config/dbConfig.js';
 import {initializeModels} from "./src/models/index.js";
+import {initializeGames} from "./src/gameLogic/index.js";
 
 const startServer = async () => {
     try{
+        //SERVER STARTUP ROUTINE
+        console.log("======starting server=======");
+
+        //validate configuration
         validateConfig();
         console.log('✅ Configuration validation passed');
         //test connection to database
@@ -17,7 +22,9 @@ const startServer = async () => {
         //initialize models
         initializeModels();
         console.log('✅ Model initialization complete')
-        //check configuration
+        //initialize games in DB
+        await initializeGames();
+        console.log('✅ Game initialization complete');
 
         //start server
         server.listen(appConfig.app.port, ()=>{
