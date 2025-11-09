@@ -77,6 +77,7 @@ export const registerNewPlayer = async (playerName, password) => {
             console.log("A player with this name already exists: ", existingPlayer);
             return {opStatus: 409} //{message: 'A Player with this name already exists'};
         }else {
+            const {Player} = db;
             const hashedPassword = await passwordHash(password)
             const newPlayer = await Player.create({playerName: playerName, password: hashedPassword});
             return {opStatus: 200, newPlayer: newPlayer}

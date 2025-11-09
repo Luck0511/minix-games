@@ -13,6 +13,8 @@ import {generateJWT, setAuthCookie} from "../../services/authService.js";
 //set up a router to manage all endpoints
 const router = express.Router();
 
+
+
 //Method: GET - returns all players in DB
 router.get('/allplayers', async (req, res) => {
     const allPlayers = await getAllPlayers();
