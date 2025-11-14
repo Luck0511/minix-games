@@ -19,7 +19,7 @@ export const getGameTypeByName = async (typeName) => {
 }
 
 /**
- * Find and return game from DB if present
+ * Find and return game from DB if present using name
  * @returns {Promise<MiniGame>} operation status
  **/
 export const getGameByName = async (gameName) => {
@@ -29,9 +29,43 @@ export const getGameByName = async (gameName) => {
     }
     try{
         const {MiniGame} = db;
-        return await MiniGame.findOne({where: {typeName: gameName}});
+        return await MiniGame.findOne({where: {gameName: gameName}});
     }catch (err){
-        console.error('Error in game type query:', err)
+        console.error('Error in minigame query:', err)
+        return null;
+    }
+}
+
+/**
+ * Find and return game from DB if present using ID
+ * @returns {Promise<MiniGame>} operation status
+ **/
+export const getGameByID = async (gameID) => {
+    if(!gameID){
+        console.error('No game ID provided');
+        return null;
+    }
+    try{
+        const {MiniGame} = db;
+        return await MiniGame.findOne({where: {gameID: gameID}});
+    }catch (err){
+        console.error('Error in minigame query:', err)
+        return null;
+    }
+}
+
+/**
+ * Find and returns max players for a given game type ID
+ * @param {number} typeName game type ID
+ * @returns {Promise<int|null>} max players or null if not found
+**/
+export const getMaxPlayersByTypeID = async (typeID) => {
+    const {GameType} = db;
+    const gameType = await GameType.findOne({where: {typeID: typeID}});
+    if(gameType){
+        return gameType.get('maxPlayers');
+    }else {
+        console.error(`Game type ${typeID} not found`);
         return null;
     }
 }
@@ -62,7 +96,7 @@ export const initGameTypes = async () => {
  * @param {int} maxPlayers maximum players for this game type
  * @returns {Promise<{opStatus: int, newGameType:GameType?}>} object with final status and nullable GameType object
 **/
-export const registerGameType = async (typeName, minPlayers, maxPlayers?) => {
+export const registerGameType = async (typeName, minPlayers, maxPlayers) => {
     if(!typeName || !minPlayers){
         return {opStatus: 400}; //{message: 'typeName and minPlayers are required'}
     }
@@ -86,9 +120,9 @@ export const registerGameType = async (typeName, minPlayers, maxPlayers?) => {
 
 /**
  * Register a new player by creating a new row in DB !!allows for future additions without server shutdown!!
- * @param {String} gameName game registered name
- * @param {String} gameType game registered type
- * @param {String} description game description
+ * @param {string} gameName game registered name
+ * @param {string} gameType game registered type by name
+ * @param {string} description game description
  * @returns {Promise<{opStatus: int, newGame:MiniGame?}>} object with final status and nullable MiniGame object
  **/
 export const registerGame = async (gameName, gameType, description) => {
@@ -104,8 +138,8 @@ export const registerGame = async (gameName, gameType, description) => {
         }else {
             const {MiniGame} = db;
             //extract typeID from gameType for reference in DB
-            const typeID = (await getGameTypeByName(gameType)).dataValues.typeID;
-            const newGame = await MiniGame.create({gameName: gameName, gameType: typeID , description: description});
+            const typeInfo = await getGameTypeByName(gameType);
+            const newGame = await MiniGame.create({gameName: gameName, gameType: typeInfo.get('typeID') , description: description});
             return {opStatus: 200, newGame: newGame}
             //{message: 'Game Registered successfully', gameInfo: newGame});
         }
