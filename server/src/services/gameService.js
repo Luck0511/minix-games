@@ -56,7 +56,7 @@ export const getGameByID = async (gameID) => {
 
 /**
  * Find and returns max players for a given game type ID
- * @param {number} typeName game type ID
+ * @param {number} typeID game type ID
  * @returns {Promise<int|null>} max players or null if not found
 **/
 export const getMaxPlayersByTypeID = async (typeID) => {
