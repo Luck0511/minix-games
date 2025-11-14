@@ -22,6 +22,7 @@ export const appConfig = {
         database: getRequiredEnv('DB_DATABASE'),
         username: getRequiredEnv('DB_USERNAME', 'root'),
         password: getRequiredEnv('DB_PASSWORD'),
+        db_uri: process.env.DB_URI || null,
         host: getRequiredEnv('DB_HOST'),
         port: getNumericEnv('DB_PORT', 3306),
         dialect: getRequiredEnv('DB_DIALECT', 'mysql'), //mysql (dev), postgres (prod)

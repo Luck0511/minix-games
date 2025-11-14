@@ -4,9 +4,9 @@ import {Sequelize} from "sequelize";
 //configuration import
 import {appConfig} from './config.js'
 
-//Sequelize instance
+//Sequelize instance --> initialize connection to database
 export const sequelize = new Sequelize(
-    appConfig.database.database,
+    appConfig.database.db_uri || appConfig.database.database,
     appConfig.database.username,
     appConfig.database.password,
     {
