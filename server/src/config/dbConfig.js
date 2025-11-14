@@ -4,11 +4,23 @@ import {Sequelize} from "sequelize";
 //configuration import
 import {appConfig} from './config.js'
 
-//Sequelize instance --> initialize connection to database
+//function to build connection URI from config parameters
+const buildURI = ()=>{
+    console.log("URI not provided, building from config parameters...");
+    //build connection URI from config
+    const dialect = appConfig.database.dialect;
+    const username = appConfig.database.username;
+    const password = appConfig.database.password ? encodeURIComponent(appConfig.database.password) : '';
+    const host = appConfig.database.host;
+    const port = appConfig.database.port;
+    const database = appConfig.database.database;
+
+    return `${dialect}://${username}:${password}@${host}:${port}/${database}`;
+}
+
+//Sequelize instance --> initialize connection to database exclusively through URI
 export const sequelize = new Sequelize(
-    appConfig.database.db_uri || appConfig.database.database,
-    appConfig.database.username,
-    appConfig.database.password,
+    appConfig.database.db_uri || buildURI(),
     {
         host: appConfig.database.host,
         port: appConfig.database.port,
