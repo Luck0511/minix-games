@@ -20,6 +20,7 @@ class Lobby {
 
         this.connectPlayer(hostPlayer);
         console.log("Lobby created successfully");
+        this.awaitPlayers().then(()=> closeLobby(this.#lobbyID));
     }
 
     static async lobbyInit(lobbyID, lobbyName, hostPlayer, gameID) {
@@ -62,6 +63,19 @@ class Lobby {
         this.players.delete(playerToRemove.get('playerID'));
     }
 
+    async awaitPlayers() {
+        this.lobbyLogging(`Awaiting players to join... (${this.players.size}/${this.#maxPlayers})`);
+        while(!this.#isFull) {
+            if(this.players.size === this.#maxPlayers) {
+                this.#isFull = true;
+                break;
+            }
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+        this.lobbyLogging(`Lobby is full. Starting game loop...`);
+        await this.gameLoop();
+    }
+
     async gameLoop() {
         let counter = 0
         while(!this.#winningCondition) {
@@ -99,9 +113,15 @@ export const sessionCreation = async (hostPlayer, gameID, lobbyName ) => {
             throw new Error(`gameID: ${gameID} not found!`);
         }
         newLobby.lobbyLogging(`Lobby created`);
-
-        await newLobby.gameLoop()
+        return newLobby;
     }catch(err) {
         console.error("Error creating session:", err);
+    }
+}
+
+export const closeLobby = (lobbyID) => {
+    if(activeLobbies.has(lobbyID)){
+        activeLobbies.delete(lobbyID);
+        console.log(`Lobby ${lobbyID} closed and removed from active lobbies.`);
     }
 }
