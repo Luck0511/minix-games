@@ -1,4 +1,9 @@
 import { db } from "../models/index.js";
+import {MiniGame} from "../models/MiniGame.js";
+import {trisInit} from "../gameLogic/tris.js";
+
+//constants
+export const gamesMapping = new Map();
 
 /**
  * Find and return gameType from DB if present
@@ -62,6 +67,7 @@ export const getGameByID = async (gameID) => {
 export const getMaxPlayersByTypeID = async (typeID) => {
     const {GameType} = db;
     const gameType = await GameType.findOne({where: {typeID: typeID}});
+    console.log('gametype', gameType)
     if(gameType){
         return gameType.get('maxPlayers');
     }else {
@@ -155,8 +161,7 @@ export const registerGame = async (gameName, gameType, description) => {
  */
 export const initializeBaseGames = async () => {
     try {
-        await registerGame('tris', 'duo', 'Classic Tic-Tac-Toe game');
-        //initialize other basic games here
+        gamesMapping.set(await registerGame('tris', 'duo', 'Classic Tic-Tac-Toe game', trisInit()));
         console.log("Basic games initialized successfully.");
         return true;
     }catch(err){
