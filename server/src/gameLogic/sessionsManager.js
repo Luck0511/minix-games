@@ -40,7 +40,7 @@ class Lobby {
     }
 
     connectPlayer(newPlayer) {
-        if(this.players.size == this.#maxPlayers) {
+        if(this.players.size === this.#maxPlayers) {
             this.#isFull = true;
             this.lobbyLogging(`Player ${newPlayer.get('playerName')} tried to join but lobby is full.`);
             return;
@@ -51,7 +51,7 @@ class Lobby {
             this.#isFull = false;
             this.players.set(newPlayer.get('playerID'), newPlayer);
             this.lobbyLogging(`Player ${newPlayer.get('playerName')} joined the lobby. (${this.players.size}/${this.#maxPlayers})`);
-            if(this.players.size == this.#maxPlayers) {
+            if(this.players.size === this.#maxPlayers) {
                 this.#isFull = true;
             }
             return;
