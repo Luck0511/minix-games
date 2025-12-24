@@ -1,13 +1,12 @@
 import {getGameByID, getMaxPlayersByTypeID} from "../services/gameService.js";
 
 //active lobbies list
-export const activeLobbies= new Map();
+export const activeLobbies = new Map();
 
 //lobby session class
 class Lobby {
     #lobbyID;
     #winningCondition = false;
-    #maxPlayers;
     #isFull = false;
 
     constructor(lobbyID, lobbyName, hostPlayer, game, maxPlayers) {
@@ -16,17 +15,15 @@ class Lobby {
         this.hostPlayer = hostPlayer;
         this.game = game;
         this.players = new Map();
-        this.#maxPlayers = maxPlayers;
+        this.maxPlayers = maxPlayers;
 
-        this.connectPlayer(hostPlayer);
-        console.log("Lobby created successfully");
-        this.awaitPlayers().then(()=> closeLobby(this.#lobbyID));
+        this.connectPlayer(hostPlayer).then();
+        this.awaitPlayers().then(() => closeLobby(this.#lobbyID));
     }
 
     static async lobbyInit(lobbyID, lobbyName, hostPlayer, gameID) {
         const game = await getGameByID(gameID);
         const maxPlayers = await getMaxPlayersByTypeID(game.get('gameType'));
-        console.log('maxPlayers for gameID', gameID, ':', maxPlayers);
         return new Lobby(
             lobbyID,
             lobbyName || `${hostPlayer.get('playerName')}'s Lobby`,
@@ -40,33 +37,33 @@ class Lobby {
         this.#winningCondition = condition;
     }
 
-    connectPlayer(newPlayer) {
-        if(this.players.size === this.#maxPlayers) {
+    async connectPlayer(newPlayer) {
+        if (this.players.size === this.maxPlayers) {
             this.#isFull = true;
             this.lobbyLogging(`Player ${newPlayer.get('playerName')} tried to join but lobby is full.`);
             return;
-        } else if(this.players.size > this.#maxPlayers) {
-            this.lobbyLogging(`ERROR: Player ${newPlayer.get('playerName')} tried to join but lobby is over capacity! (${this.players.size}/${this.#maxPlayers})`);
+        } else if (this.players.size > this.maxPlayers) {
+            this.lobbyLogging(`ERROR: Player ${newPlayer.get('playerName')} tried to join but lobby is over capacity! (${this.players.size}/${this.maxPlayers})`);
             return;
         } else {
             this.#isFull = false;
             this.players.set(newPlayer.get('playerID'), newPlayer);
-            this.lobbyLogging(`Player ${newPlayer.get('playerName')} joined the lobby. (${this.players.size}/${this.#maxPlayers})`);
-            if(this.players.size === this.#maxPlayers) {
+            this.lobbyLogging(`Player ${newPlayer.get('playerName')} joined the lobby. (${this.players.size}/${this.maxPlayers})`);
+            if (this.players.size === this.maxPlayers) {
                 this.#isFull = true;
             }
             return;
         }
     }
 
-    disconnectPlayer(playerToRemove) {
+    async disconnectPlayer(playerToRemove) {
         this.players.delete(playerToRemove.get('playerID'));
     }
 
     async awaitPlayers() {
-        this.lobbyLogging(`Awaiting players to join... (${this.players.size}/${this.#maxPlayers})`);
-        while(!this.#isFull) {
-            if(this.players.size === this.#maxPlayers) {
+        this.lobbyLogging(`Awaiting players to join... (${this.players.size}/${this.maxPlayers})`);
+        while (!this.#isFull) {
+            if (this.players.size === this.maxPlayers) {
                 this.#isFull = true;
                 break;
             }
@@ -78,28 +75,28 @@ class Lobby {
 
     async gameLoop() {
         let counter = 0
-        while(!this.#winningCondition) {
+        while (!this.#winningCondition) {
             counter += 1;
-            this.#tick(counter);
+            await this.#tick(counter);
             await new Promise(resolve => setTimeout(resolve, 1000));
         }
     }
 
-    #tick(round) {
+    async #tick(round) {
         console.log('Fake Round:', round, 'in Lobby:', this.#lobbyID);
-        if(round>=5){
+        if (round >= 20) {
             this.setWinningCondition(true);
             this.lobbyLogging(`Winning condition met. Ending game loop.`);
         }
     }
 
     lobbyLogging(msg) {
-        console.log(`[Lobby ${this.#lobbyID}::${Date.now()}]: ${msg}`);
+        console.log(`[Lobby ${this.#lobbyID}::${Date().toString().split(' GMT')[0].replaceAll(' ', '-')}]: ${msg}`);
     }
 }
 
-export const sessionCreation = async (hostPlayer, gameID, lobbyName ) => {
-    try{
+export const sessionCreation = async (hostPlayer, gameID, lobbyName) => {
+    try {
         //generate random lobby ID
         const randomLobbyID = Date.now().toString(36) + Math.random().toString(36).substring(2, 7);
         //lobby instance
@@ -109,19 +106,53 @@ export const sessionCreation = async (hostPlayer, gameID, lobbyName ) => {
         //get game info from DB
         const game = await getGameByID(gameID)
         //if game not found throw error
-        if(!game){
+        if (!game) {
             throw new Error(`gameID: ${gameID} not found!`);
         }
-        newLobby.lobbyLogging(`Lobby created`);
+        newLobby.lobbyLogging('Lobby created successfully')
         return newLobby;
-    }catch(err) {
+    } catch (err) {
         console.error("Error creating session:", err);
     }
 }
 
 export const closeLobby = (lobbyID) => {
-    if(activeLobbies.has(lobbyID)){
+    if (activeLobbies.has(lobbyID)) {
         activeLobbies.delete(lobbyID);
         console.log(`Lobby ${lobbyID} closed and removed from active lobbies.`);
     }
+}
+
+/**
+ * Function to correctly serialize the active lobbies Map
+ * @returns {Object} object with complete safe active lobbies
+ **/
+export const serializeLobbies = ()=>{
+    //result container object
+    const result = {};
+    //iterate through active lobbies Map
+    for (const [lobbyKey, lobby] of activeLobbies) {
+        //append lobby info to lobbyKey position
+        result[lobbyKey] = {
+            //rest of lobby info
+            ...lobby,
+            //specific serialization for hostPlayer (removing password, registerData, isActive)
+            hostPlayer: {
+                playerID: lobby.hostPlayer.playerID,
+                playerName: lobby.hostPlayer.playerName,
+            },
+            //create an object from entries
+            players: Object.fromEntries(
+                //create an array from the players Map and modify it to remove unsafe fields
+                Array.from(lobby.players).map(([id, player]) => {
+                    //specific serialization for players in Map (removing password, registerData, isActive)
+                    const { password, isActive, registerDate, ...safeData } = player.dataValues;
+                    //returns the id of the entry and the safe data
+                    return [id, safeData];
+                })
+            )
+        };
+    }
+    //returns the result object
+    return result;
 }

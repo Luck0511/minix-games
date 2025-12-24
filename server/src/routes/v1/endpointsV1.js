@@ -9,6 +9,7 @@ import {
     loginPlayer
 } from "../../services/playerService.js";
 import {generateJWT, setAuthCookie} from "../../services/authService.js";
+import {serializeLobbies} from "../../gameLogic/sessionsManager.js";
 
 //set up a router to manage all endpoints
 const router = express.Router();
@@ -113,6 +114,13 @@ router.post('/login',async (req, res) => {
             return res.status(520).json({message: 'Generic unknown error'});
         }
     }
+})
+
+router.get('/activelobbies', async (req, res) => {
+    res.status(200).json({
+        message: 'Active lobbies',
+        lobbies: serializeLobbies(),
+    });
 })
 
 //export the router to be used in app.js

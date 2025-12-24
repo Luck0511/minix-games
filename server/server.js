@@ -7,6 +7,8 @@ import {validateConfig} from './src/config/config.js';
 import {testConnection} from './src/config/dbConfig.js';
 import {initializeModels} from "./src/models/index.js";
 import {initializeGames} from "./src/gameLogic/index.js";
+import {sessionCreation} from "./src/gameLogic/sessionsManager.js";
+import {getPlayerByName, registerNewPlayer} from "./src/services/playerService.js";
 
 const startServer = async () => {
     try{
@@ -54,6 +56,18 @@ const startServer = async () => {
         process.exit(1);
     }
 }
-startServer().then(()=>{
+startServer().then(async () => {
     console.log('======startup routine terminated======');
+
+    //====== TESTING SESSION ========
+    await registerNewPlayer("lucaAdmin", "123456");
+    const session = await sessionCreation(await getPlayerByName('lucaAdmin'), 1,);
+
+    const newTestPlayer = await registerNewPlayer("newTestPlayer", "123456").then(
+        status => status.newPlayer
+    );
+    setTimeout(() => {
+        session.connectPlayer(newTestPlayer)
+    }, 5000)
+
 });
