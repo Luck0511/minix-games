@@ -4,7 +4,7 @@ import {getGameByID, getMaxPlayersByTypeID} from "../services/gameService.js";
 export const activeLobbies = new Map();
 
 //lobby session class
-class Lobby {
+export class Lobby {
     #lobbyID;
     #winningCondition = false;
     #isFull = false;
@@ -22,7 +22,12 @@ class Lobby {
     }
 
     static async lobbyInit(lobbyID, lobbyName, hostPlayer, gameID) {
-        const game = await getGameByID(gameID);
+        //get game info from DB
+        const game = await getGameByID(gameID)
+        //if game not found throw error
+        if (!game) {
+            throw new Error(`gameID: ${gameID} not found!`);
+        }
         const maxPlayers = await getMaxPlayersByTypeID(game.get('gameType'));
         return new Lobby(
             lobbyID,
@@ -41,10 +46,8 @@ class Lobby {
         if (this.players.size === this.maxPlayers) {
             this.#isFull = true;
             this.lobbyLogging(`Player ${newPlayer.get('playerName')} tried to join but lobby is full.`);
-            return;
         } else if (this.players.size > this.maxPlayers) {
             this.lobbyLogging(`ERROR: Player ${newPlayer.get('playerName')} tried to join but lobby is over capacity! (${this.players.size}/${this.maxPlayers})`);
-            return;
         } else {
             this.#isFull = false;
             this.players.set(newPlayer.get('playerID'), newPlayer);
@@ -52,7 +55,6 @@ class Lobby {
             if (this.players.size === this.maxPlayers) {
                 this.#isFull = true;
             }
-            return;
         }
     }
 
@@ -95,20 +97,21 @@ class Lobby {
     }
 }
 
+/**
+ * Factory Function to fully initialize a lobby
+ * @param {Player} hostPlayer the player creating the lobby
+ * @param {number} gameID the ID number for the selected game
+ * @param {string} lobbyName optional lobby name, if not present created automatically
+ * @returns {Lobby} the newly created lobby instance
+ **/
 export const sessionCreation = async (hostPlayer, gameID, lobbyName) => {
     try {
         //generate random lobby ID
         const randomLobbyID = Date.now().toString(36) + Math.random().toString(36).substring(2, 7);
-        //lobby instance
+        //create lobby instance
         const newLobby = await Lobby.lobbyInit(randomLobbyID, lobbyName, hostPlayer, gameID);
-        //add new lobby to active lobbies
+        //add new lobby to list of active lobbies
         activeLobbies.set(randomLobbyID, newLobby);
-        //get game info from DB
-        const game = await getGameByID(gameID)
-        //if game not found throw error
-        if (!game) {
-            throw new Error(`gameID: ${gameID} not found!`);
-        }
         newLobby.lobbyLogging('Lobby created successfully')
         return newLobby;
     } catch (err) {
@@ -116,6 +119,11 @@ export const sessionCreation = async (hostPlayer, gameID, lobbyName) => {
     }
 }
 
+/**
+ * Function to terminate lobby by its ID, removing it from the list
+ * TODO: add the log to the database once game ended!!!
+ * @returns {void}
+ **/
 export const closeLobby = (lobbyID) => {
     if (activeLobbies.has(lobbyID)) {
         activeLobbies.delete(lobbyID);

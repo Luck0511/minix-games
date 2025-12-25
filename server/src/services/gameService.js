@@ -67,7 +67,6 @@ export const getGameByID = async (gameID) => {
 export const getMaxPlayersByTypeID = async (typeID) => {
     const {GameType} = db;
     const gameType = await GameType.findOne({where: {typeID: typeID}});
-    console.log('gametype', gameType)
     if(gameType){
         return gameType.get('maxPlayers');
     }else {
