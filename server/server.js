@@ -8,7 +8,7 @@ import {testConnection} from './src/config/dbConfig.js';
 import {initializeModels} from "./src/models/index.js";
 import {initializeGames} from "./src/gameLogic/index.js";
 import {sessionCreation} from "./src/gameLogic/sessionsManager.js";
-import {getPlayerByName, registerNewPlayer} from "./src/services/playerService.js";
+import {registerNewPlayer} from "./src/services/playerService.js";
 
 const startServer = async () => {
     try{
@@ -60,14 +60,23 @@ startServer().then(async () => {
     console.log('======startup routine terminated======');
 
     //====== TESTING SESSION ========
-    await registerNewPlayer("lucaAdmin", "123456");
-    const session = await sessionCreation(await getPlayerByName('lucaAdmin'), 1,);
+    const LucaAdmin = (await registerNewPlayer("lucaAdmin", "123456")).newPlayer;
+    const TestPlayer1 = (await registerNewPlayer("TestPlayer1", "123456")).newPlayer;
+    const TestPlayer2 = (await registerNewPlayer("TestPlayer2", "123456")).newPlayer;
+    const TestPlayer3 = (await registerNewPlayer("TestPlayer3", "123456")).newPlayer;
+    const TestPlayer4 = (await registerNewPlayer("TestPlayer4", "123456")).newPlayer;
 
-    const newTestPlayer = await registerNewPlayer("newTestPlayer", "123456").then(
-        status => status.newPlayer
-    );
+
+    const session1 = await sessionCreation(LucaAdmin, 1, '',true);
+    const session2 = await sessionCreation(TestPlayer1, 1);
+    const emptySession = await sessionCreation(TestPlayer4, null, "emptySession");
+
     setTimeout(() => {
-        session.connectPlayer(newTestPlayer)
-    }, 5000)
+        session1.connectPlayer(TestPlayer2)
+    }, Math.random()*5000)
+
+    setTimeout(() => {
+        session2.connectPlayer(TestPlayer3)
+    }, Math.random()*5000)
 
 });
