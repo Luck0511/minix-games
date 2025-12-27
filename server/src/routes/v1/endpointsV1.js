@@ -116,10 +116,18 @@ router.post('/login',async (req, res) => {
     }
 })
 
-router.get('/activelobbies', async (req, res) => {
+//Method: GET - returns all  public active lobbies
+router.get('/activelobbies',(req, res) => {
+    const allLobbies = serializeLobbies()
+    const publicLobbies = {};
+    for(let some in allLobbies){
+        if(!allLobbies[some].isPrivate){
+            publicLobbies[some] = allLobbies[some];
+        };
+    }
     res.status(200).json({
         message: 'Active lobbies',
-        lobbies: serializeLobbies(),
+        lobbies: publicLobbies,
     });
 })
 

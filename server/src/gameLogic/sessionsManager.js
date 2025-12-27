@@ -9,29 +9,39 @@ export class Lobby {
     #winningCondition = false;
     #isFull = false;
 
-    constructor(lobbyID, lobbyName, hostPlayer, game, maxPlayers) {
+    constructor(lobbyID, lobbyName, isPrivate, hostPlayer, game, maxPlayers) {
         this.#lobbyID = lobbyID;
         this.lobbyName = lobbyName;
+        this.isPrivate = isPrivate;
         this.hostPlayer = hostPlayer;
         this.game = game;
         this.players = new Map();
         this.maxPlayers = maxPlayers;
+        this.roundCounter = 0;
+        this.createdAt = new Date().toISOString(); //ISO date, need parsing fron-end side
 
         this.connectPlayer(hostPlayer).then();
         this.awaitPlayers().then(() => closeLobby(this.#lobbyID));
     }
 
-    static async lobbyInit(lobbyID, lobbyName, hostPlayer, gameID) {
-        //get game info from DB
-        const game = await getGameByID(gameID)
-        //if game not found throw error
-        if (!game) {
-            throw new Error(`gameID: ${gameID} not found!`);
+    static async lobbyInit(lobbyID, lobbyName, isPrivate, hostPlayer, gameID) {
+        let game;
+        let maxPlayers;
+        //if a game is preselected in creation, set it here
+        if(gameID){
+            //get game info from DB
+            game = await getGameByID(gameID)
+            //if game not found throw error
+            if (!game) {
+                throw new Error(`gameID: ${gameID} not found!`);
+            }
+            //set max players based on game selected
+            maxPlayers = await getMaxPlayersByTypeID(game.get('gameType'));
         }
-        const maxPlayers = await getMaxPlayersByTypeID(game.get('gameType'));
         return new Lobby(
             lobbyID,
             lobbyName || `${hostPlayer.get('playerName')}'s Lobby`,
+            isPrivate || false,
             hostPlayer,
             game,
             maxPlayers
@@ -76,16 +86,15 @@ export class Lobby {
     }
 
     async gameLoop() {
-        let counter = 0
         while (!this.#winningCondition) {
-            counter += 1;
-            await this.#tick(counter);
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            this.roundCounter += 1;
+            await this.#tick(this.roundCounter);
+            await new Promise(resolve => setTimeout(resolve, Math.random()*10000));
         }
     }
 
     async #tick(round) {
-        console.log('Fake Round:', round, 'in Lobby:', this.#lobbyID);
+        this.lobbyLogging(`Fake Round: ${round}`);
         if (round >= 20) {
             this.setWinningCondition(true);
             this.lobbyLogging(`Winning condition met. Ending game loop.`);
@@ -93,7 +102,7 @@ export class Lobby {
     }
 
     lobbyLogging(msg) {
-        console.log(`[Lobby ${this.#lobbyID}::${Date().toString().split(' GMT')[0].replaceAll(' ', '-')}]: ${msg}`);
+        console.log(`[Lobby: ${this.#lobbyID} - ${this.lobbyName}::${Date().toString().split(' GMT')[0].replaceAll(' ', '-')}]: ${msg}`);
     }
 }
 
@@ -102,14 +111,15 @@ export class Lobby {
  * @param {Player} hostPlayer the player creating the lobby
  * @param {number} gameID the ID number for the selected game
  * @param {string} lobbyName optional lobby name, if not present created automatically
+ * @param {boolean} isPrivate optional flag (false by default) to set private lobby
  * @returns {Lobby} the newly created lobby instance
  **/
-export const sessionCreation = async (hostPlayer, gameID, lobbyName) => {
+export const sessionCreation = async (hostPlayer, gameID, lobbyName, isPrivate) => {
     try {
         //generate random lobby ID
         const randomLobbyID = Date.now().toString(36) + Math.random().toString(36).substring(2, 7);
         //create lobby instance
-        const newLobby = await Lobby.lobbyInit(randomLobbyID, lobbyName, hostPlayer, gameID);
+        const newLobby = await Lobby.lobbyInit(randomLobbyID, lobbyName, isPrivate, hostPlayer, gameID);
         //add new lobby to list of active lobbies
         activeLobbies.set(randomLobbyID, newLobby);
         newLobby.lobbyLogging('Lobby created successfully')
@@ -149,13 +159,14 @@ export const serializeLobbies = ()=>{
                 playerID: lobby.hostPlayer.playerID,
                 playerName: lobby.hostPlayer.playerName,
             },
+            game: lobby.game?.dataValues || 'Game not yet selected',
             //create an object from entries
             players: Object.fromEntries(
                 //create an array from the players Map and modify it to remove unsafe fields
                 Array.from(lobby.players).map(([id, player]) => {
                     //specific serialization for players in Map (removing password, registerData, isActive)
                     const { password, isActive, registerDate, ...safeData } = player.dataValues;
-                    //returns the id of the entry and the safe data
+                    //returns the id of the player and the safe data
                     return [id, safeData];
                 })
             )
