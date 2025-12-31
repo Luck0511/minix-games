@@ -41,7 +41,7 @@ export const getAllPlayers = async () => {
 /**
  * Execute a query searching for a player by its registered playerName
  * @param {String} playerName registered player name
- * @returns Player object promise or null for player not found
+ * @returns {Object}Player object promise or null for player not found
  **/
 export const getPlayerByName = async (playerName) => {
     if(!playerName){
