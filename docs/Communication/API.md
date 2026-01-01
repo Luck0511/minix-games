@@ -318,7 +318,7 @@ The following endpoints are APIs created to allow the exchange of data related t
 
 ### Retrieve all players
 
-***`GET` /api/v1/allplayers***
+***`GET` /api/v1/allPlayers***
 
 This endpoint allows to retrieve all the players registered in the system, excluding guest players.
 
