@@ -6,34 +6,15 @@ import {
     getPlayerByName,
     registerNewPlayer,
     basePlayerValidation,
-    loginPlayer
+    loginPlayer, playerSafeData
 } from "../../services/playerService.js";
 import {generateJWT, setAuthCookie} from "../../services/authService.js";
-import {serializeLobbies} from "../../gameLogic/sessionsManager.js";
+import {publicLobbies} from "../../gameLogic/sessionsManager.js";
 
 //set up a router to manage all endpoints
 const router = express.Router();
 
-
-
-//Method: GET - returns all players in DB
-router.get('/allplayers', async (req, res) => {
-    const allPlayers = await getAllPlayers();
-    res.json({allPlayers});
-})
-
-//Method: GET - returns player info by playerName query param
-router.get('/getPlayer', async (req, res) => {
-    const playerName = req.query.playerName;
-    if(!playerName){
-        return res.status(400).json({message: 'Player name is required in query params'});
-    }
-    const player = await getPlayerByName(playerName);
-    if(!player){
-        res.status(400).json({message: 'Player name is required in query params'});
-    }
-    res.json({message:'Player found', playerInfo: player});
-})
+/*=====================AUTH API=====================*/
 
 //Method: POST - REGISTER new player - must pass playerName and password in body
 router.post('/register', async (req, res) => {
@@ -74,7 +55,7 @@ router.post('/register', async (req, res) => {
     }
 })
 
-//Method: POST - login player - must pass playerName and password in body
+// //Method: POST - login player - must pass playerName and password in body
 router.post('/login',async (req, res) => {
     const {playerName, password} = req.body;
 
@@ -116,18 +97,39 @@ router.post('/login',async (req, res) => {
     }
 })
 
-//Method: GET - returns all  public active lobbies
-router.get('/activelobbies',(req, res) => {
-    const allLobbies = serializeLobbies()
-    const publicLobbies = {};
-    for(let some in allLobbies){
-        if(!allLobbies[some].isPrivate){
-            publicLobbies[some] = allLobbies[some];
-        };
+
+/*=====================PLAYER API=====================*/
+
+//TODO: filter out password field and consider other fields(update API docs if filter anything other than password)
+
+//Method: GET - returns all players in DB filtering unsafe data
+router.get('/allPlayers', async (req, res) => {
+    const allPlayers = await getAllPlayers();
+    //mapping the array of players to filter out unsafe data
+    const allSafePlayers = allPlayers.map((player) => playerSafeData(player))
+    res.status(200).json({allSafePlayers});
+})
+
+//Method: GET - returns player info by playerName query param filtering unsafe data
+router.get('/getPlayer', async (req, res) => {
+    const playerName = req.query.playerName;
+    if(!playerName){
+        return res.status(400).json({message: 'Player name is required in query params'});
     }
+    const player = await getPlayerByName(playerName);
+    if(!player){
+        res.status(404).json({message: 'Player not found'});
+    }
+    res.status(200).json({message:'Player found', playerInfo: playerSafeData(player)});
+})
+
+/*=====================LOBBY API=====================*/
+
+//Method: GET - returns all  public active lobbies
+router.get('/activeLobbies',(req, res) => {
     res.status(200).json({
         message: 'Active lobbies',
-        lobbies: publicLobbies,
+        lobbies: publicLobbies(),
     });
 })
 
