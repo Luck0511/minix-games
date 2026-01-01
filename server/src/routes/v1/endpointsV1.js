@@ -100,8 +100,6 @@ router.post('/login',async (req, res) => {
 
 /*=====================PLAYER API=====================*/
 
-//TODO: filter out password field and consider other fields(update API docs if filter anything other than password)
-
 //Method: GET - returns all players in DB filtering unsafe data
 router.get('/allPlayers', async (req, res) => {
     const allPlayers = await getAllPlayers();
