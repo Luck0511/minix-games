@@ -40,7 +40,10 @@ and data exchange between essential system parts (Server to Client)
 
 - **[Players API](#players-api)**
   - [All players](#retrieve-all-players).
-  - [Spicific player info](#specific-player-info).
+  - [Specific player info](#specific-player-info).
+
+- **[Lobbies API](#lobbies-api)**
+    - [Active Lobbies](#retrieve-all-active-public-lobbies). 
 
 ---
 
@@ -414,4 +417,74 @@ This endpoint allows to retrieve the information of a specific player given its 
 >   }
 > ```
 >
+> </details>
+
+---
+
+## Lobbies API
+
+The following endpoints are APIs created for lobbies management and data exchange on clients demand.
+
+---
+
+### Retrieve all active public lobbies
+
+***`GET` /api/v1/activeLobbies***
+
+This endpoint allows to retrieve all the active lobbies in the system, excluding private lobbies and displaying only safe player data.
+
+***NOTE:*** *the system serializes a map of active lobbies containing the lobby instance associated to its random ID,
+retrieving all data including the players that has joined the lobby, this collection must then be filtered from unsafe data
+such as player's passwords during serialization phase in the backend server*
+
+---
+
+#### Expected Response
+
+> - 200 `OK`:
+>   - the system successfully retrieved the map data and serialized it into a compatible and safe object to send through JSON format
+>
+> <details>
+> 
+> <summary>Body:</summary>
+> 
+> ```JSON
+> {
+>   "message": "Active lobbies",
+>   "lobbies": [
+>       {
+>         "lobbyKey":"mjx1qc10dz1gi",
+>         "lobbyName":"TestPlayer1's Lobby",
+>         "isPrivate":false,
+>         "hostPlayer":{
+>             "playerID":2,
+>             "playerName":"TestPlayer1"
+>         },
+>         "game":{
+>             "gameID":1,
+>             "gameName":"tris",
+>             "gameType":2,
+>             "description":"Classic Tic-Tac-Toe game",
+>             "createdAt":"2026-01-02T15:46:03.000Z",
+>             "updatedAt":"2026-01-02T15:46:03.000Z"
+>         },
+>         "players":{
+>             "2":{
+>                 "playerID":2,
+>                 "playerName":"TestPlayer1"
+>             },
+>             "4":{
+>                 "playerID":4,
+>                 "playerName":"TestPlayer3"
+>           }
+>         },
+>         "maxPlayers":2,
+>         "roundCounter":1,
+>         "createdAt":"2026-01-02T15:46:06.571Z"
+>     },
+>     {"..." :  "..."}
+>   ]
+> }
+> ```
+> 
 > </details>
