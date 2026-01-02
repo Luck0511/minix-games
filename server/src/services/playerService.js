@@ -25,8 +25,19 @@ export const basePlayerValidation = (userData, res) => {
 }
 
 /**
+ * Returns and object containing only safe player data, excluding Sequelize's fields and player's password
+ * @returns {Object} Player object containing player's safe data
+ **/
+export const playerSafeData = (player) => {
+    const {password, ...safeData} = player.dataValues;
+    return {
+        ...safeData
+    }
+}
+
+/**
  * Find and returns all registered players
- * @returns {Promise<Player[]> | null} Player array promise containing all players registered in DB
+ * @returns {Player[] || null} Player array promise containing all players registered in DB
  **/
 export const getAllPlayers = async () => {
     try{

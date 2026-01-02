@@ -175,3 +175,17 @@ export const serializeLobbies = ()=>{
     //returns the result object
     return result;
 }
+
+/**
+ * Function to correctly convert the active lobbies Map into an array of ONLY public lobbies
+ * @returns {Array} Array with complete safe active public lobbies
+ **/
+export const publicLobbies = ()=>{
+    const allLobbies = serializeLobbies();
+    return Object.entries(allLobbies)
+        .filter(([key, lobby]) => !lobby.isPrivate)
+        .map(([key, lobby]) => ({
+            lobbyKey: key,
+            ...lobby
+        }));
+}
