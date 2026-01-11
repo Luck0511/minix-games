@@ -13,7 +13,7 @@ const lobbiesRouter = express.Router();
 lobbiesRouter.get('/activeLobbies',(req, res) => {
     res.status(200).json({
         message: 'Active lobbies',
-        lobbies: publicLobbies(),
+        activeLobbies: publicLobbies(),
     });
 })
 
