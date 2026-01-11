@@ -3,6 +3,12 @@
   "version": "1.0.0",
   "main": "server.js",
   "type": "module",
+  "imports": {
+    "#routers/*": "./src/routes/v1/restAPI/*",
+    "#socketHandlers/*": "./src/routes/v1/socketHandlers/*",
+    "#services/*": "./src/services/*",
+    "#gameLogic/*": "./src/gameLogic/*"
+  },
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
