@@ -4,8 +4,13 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-//other imports
-import router from './routes/v1/endpointsV1.js';
+
+//router imports
+import authRouter from '#routers/authAPI.js';
+import lobbiesRouter from '#routers/lobbiesAPI.js';
+import playersRouter from '#routers/playersAPI.js';
+
+import {disconnectClientSocket, initializeClientSocket} from "./routes/v1/socketHandlers/clientHandler.js";
 
 export const app = express();
 export const server = createServer(app);
@@ -23,32 +28,28 @@ const io = new Server(server, {cors: corsOptions});
 app.use(cors(corsOptions)); //allow cross-origin request, mainly for localhost testing
 app.use(cookieParser()) //parse cookies from requests-response
 app.use(express.json()); //parse JSON from requests-response
-app.use('/api/v1', router); //router mounting allowing access to API endpoints
+
+//routers mounting allowing access to API endpoints
+app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/lobbies', lobbiesRouter);
+app.use('/api/v1/players', playersRouter);
 
 // APIS --> ENDPOINTS MANAGEMENT
 app.get('/', (req, res) => {
     res.json({
-        message : "Multiplayer game server is running and responsive!",
+        message : "MinixGames server is running and responsive!",
     });
 });
 
 // Socket.io connection handling --> SOCKET MANAGEMENT
 io.on('connection', (clientSocket) => {
-    console.log('A user connected:', clientSocket.id);
+
+    //socket initialization process on connection
+    initializeClientSocket(io, clientSocket);
 
     // Handle disconnection
     clientSocket.on('disconnect', () => {
         console.log('User disconnected:', clientSocket.id);
+        disconnectClientSocket(clientSocket);
     });
-
-/*=== LISTENERS FOR CUSTOM EVENTS ===*/
-    //Handle a test message
-    clientSocket.on('test-message', (data) => {
-        console.log('Received test message:', data);
-        clientSocket.emit('test-response', { message: 'Hello from server!' });
-    });
-    //Handle user-info received
-    clientSocket.on('user-info', (userData)=>{
-        console.table(userData)
-    })
 });

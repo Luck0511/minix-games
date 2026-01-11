@@ -1,23 +1,25 @@
 //utility imports
 import express from "express";
-//other imports
-import {
-    getAllPlayers,
-    getPlayerByName,
-    registerNewPlayer,
-    basePlayerValidation,
-    loginPlayer, playerSafeData
-} from "../../services/playerService.js";
-import {generateJWT, setAuthCookie} from "../../services/authService.js";
-import {publicLobbies} from "../../gameLogic/sessionsManager.js";
 
-//set up a router to manage all endpoints
-const router = express.Router();
+//services imports
+import {
+    basePlayerValidation,
+    loginPlayer,
+    registerNewPlayer
+} from "#services/playerService.js";
+
+import {
+    generateJWT,
+    setAuthCookie
+} from "#services/authService.js";
+
+//set up a authRouter to manage all endpoints
+const authRouter = express.Router();
 
 /*=====================AUTH API=====================*/
 
 //Method: POST - REGISTER new player - must pass playerName and password in body
-router.post('/register', async (req, res) => {
+authRouter.post('/register', async (req, res) => {
     const {playerName, password} = req.body;
 
     //execute base validation on name and password
@@ -56,7 +58,7 @@ router.post('/register', async (req, res) => {
 })
 
 // //Method: POST - login player - must pass playerName and password in body
-router.post('/login',async (req, res) => {
+authRouter.post('/login',async (req, res) => {
     const {playerName, password} = req.body;
 
     //execute base validation on name and password
@@ -97,39 +99,4 @@ router.post('/login',async (req, res) => {
     }
 })
 
-
-/*=====================PLAYER API=====================*/
-
-//Method: GET - returns all players in DB filtering unsafe data
-router.get('/allPlayers', async (req, res) => {
-    const allPlayers = await getAllPlayers();
-    //mapping the array of players to filter out unsafe data
-    const allSafePlayers = allPlayers.map((player) => playerSafeData(player))
-    res.status(200).json({allSafePlayers});
-})
-
-//Method: GET - returns player info by playerName query param filtering unsafe data
-router.get('/getPlayer', async (req, res) => {
-    const playerName = req.query.playerName;
-    if(!playerName){
-        return res.status(400).json({message: 'Player name is required in query params'});
-    }
-    const player = await getPlayerByName(playerName);
-    if(!player){
-        res.status(404).json({message: 'Player not found'});
-    }
-    res.status(200).json({message:'Player found', playerInfo: playerSafeData(player)});
-})
-
-/*=====================LOBBY API=====================*/
-
-//Method: GET - returns all  public active lobbies
-router.get('/activeLobbies',(req, res) => {
-    res.status(200).json({
-        message: 'Active lobbies',
-        lobbies: publicLobbies(),
-    });
-})
-
-//export the router to be used in app.js
-export default router;
+export default authRouter;

@@ -51,11 +51,13 @@ and data exchange between essential system parts (Server to Client)
 
 The following endpoints are APIs created to allow players to register and access the system with a personal account.
 
+__BASE:__ _/api/v1/auth/*_
+
 ---
 
 ### User Registration:
 
-***`POST` /api/v1/register***
+***`POST` /api/v1/auth/register***
 
 Registration endpoint to register a new player into the system.
 
@@ -166,7 +168,7 @@ The request requires a body to be passed containing:
 
 ### User Login:
 
-***`POST` /api/v1/login***
+***`POST` /api/v1/auth/login***
 
 Login endpoint to verify credentials granting access to personal profile if credentials match or exist in the system.
 
@@ -317,11 +319,13 @@ The request requires a body to be passed containing:
 
 The following endpoints are APIs created to allow the exchange of data related to players from the server to the requesting client
 
+__BASE:__ _/api/v1/players/*_
+
 ---
 
 ### Retrieve all players
 
-***`GET` /api/v1/allPlayers***
+***`GET` /api/v1/players/allPlayers***
 
 This endpoint allows to retrieve all the players registered in the system, excluding guest players.
 
@@ -353,7 +357,7 @@ This endpoint allows to retrieve all the players registered in the system, exclu
 
 ### Specific player info
 
-***`GET` /api/v1/getPlayer?(playerName)***
+***`GET` /api/v1/players/getPlayer?(playerName)***
 
 This endpoint allows to retrieve the information of a specific player given its playerName.
 
@@ -425,11 +429,13 @@ This endpoint allows to retrieve the information of a specific player given its 
 
 The following endpoints are APIs created for lobbies management and data exchange on clients demand.
 
+__BASE:__ _/api/v1/lobbies/*_
+
 ---
 
 ### Retrieve all active public lobbies
 
-***`GET` /api/v1/activeLobbies***
+***`GET` /api/v1/lobbies/activeLobbies***
 
 This endpoint allows to retrieve all the active lobbies in the system, excluding private lobbies and displaying only safe player data.
 

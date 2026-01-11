@@ -37,7 +37,7 @@ export const playerSafeData = (player) => {
 
 /**
  * Find and returns all registered players
- * @returns {Player[] || null} Player array promise containing all players registered in DB
+ * @returns {Promise<Player[] || null>} Player array promise containing all players registered in DB
  **/
 export const getAllPlayers = async () => {
     try{
