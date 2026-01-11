@@ -21,14 +21,16 @@ and data exchange between essential system parts (Server to Client)
 > ------------
 >
 > ### Server Status codes:
-> - 200 `OK` - The request was successful and the server processed and returned the result of the operation.
-> - 400 `Bad Request` - The request could not be understood or was missing required parameters.
-> - 401 `Unathorized` - Authentication failed or user doesn't have permissions for requested operation.
-> - 403 `Forbidden` - Access denied or missing authorization.
-> - 404 `Not Found` - Resource was not found.
-> - 409 `Conflict` - Resources conflicting (example: cannot create a player with same ID or playerName).
-> - 500 `Internal Server Error` - Internal server error involving wrong code or logic.
-> - 520 `Unknown Error` - Generic fallback unknown error.
+>| Code | Status                  | Description                                                                                   |
+>|------|-------------------------|-----------------------------------------------------------------------------------------------|
+>| 200  | `OK`                    | The request was successful and the server processed and returned the result of the operation. |
+>| 400  | `Bad Request`           | The request could not be understood or was missing required parameters.                       |
+>| 401  | `Unauthorized`          | Authentication failed or user doesn't have permissions for requested operation.               |
+>| 403  | `Forbidden`             | Access denied or missing authorization.                                                       |
+>| 404  | `Not Found`             | Resource was not found.                                                                       |
+>| 409  | `Conflict`              | Resources conflicting (example: cannot create a player with same ID or playerName).           |
+>| 500  | `Internal Server Error` | Internal server error involving wrong code or logic.                                          |
+>| 520  | `Unknown Error`         | Generic fallback unknown error.                                                               |
 
 ---
 
@@ -44,6 +46,24 @@ and data exchange between essential system parts (Server to Client)
 
 - **[Lobbies API](#lobbies-api)**
     - [Active Lobbies](#retrieve-all-active-public-lobbies). 
+
+---
+
+## Structure Overview
+
+```
+/api/v1
+├── /auth
+│   ├── /register
+│   └── /login
+│
+├── /players
+│   ├── /allPlayers
+│   └── /getPlayer
+│
+└── /lobbies
+    └── /activeLobbies
+```
 
 ---
 
