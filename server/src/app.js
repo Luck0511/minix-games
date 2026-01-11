@@ -10,7 +10,7 @@ import authRouter from '#routers/authAPI.js';
 import lobbiesRouter from '#routers/lobbiesAPI.js';
 import playersRouter from '#routers/playersAPI.js';
 
-import {disconnectClientSocket, initializeClientSocket} from "./routes/v1/socketHandlers/clientHandler.js";
+import {disconnectClientSocket, initializeClientSocket} from "#socketHandlers/clientHandler.js";
 
 export const app = express();
 export const server = createServer(app);
