@@ -5,7 +5,8 @@ import {useSocket} from "./context/Socket.ctx.jsx";
 import {LoginFormCmp} from "./components/LoginForm.cmp.jsx";
 
 //other imports
-import {RegisterFormCmp} from "./components/RegisterForm.cmp.jsx"; //server url from .env
+import {RegisterFormCmp} from "./components/RegisterForm.cmp.jsx";
+import {LobbiesListCmp} from "./components/LobbiesList.cmp.jsx";
 
 function App() {
     //config
@@ -29,6 +30,7 @@ function App() {
     useEffect(() => {
         socket.on('test-response', (data) => {
             setServerMessage(data.message);
+            console.log('response:', data)
         })
         return ()=>{
             socket.off('test-response');
@@ -68,6 +70,10 @@ function App() {
                 </div>
                 <div>
                     <RegisterFormCmp />
+                </div>
+
+                <div>
+                    <LobbiesListCmp/>
                 </div>
             </div>
 
