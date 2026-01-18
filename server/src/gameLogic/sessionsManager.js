@@ -1,4 +1,12 @@
-import {getGameByID, getMaxPlayersByTypeID} from "../services/gameService.js";
+//services import
+import {
+    getGameByID,
+    getMaxPlayersByTypeID
+} from "#services/gameService.js";
+
+import {
+    getPlayerInfo
+} from "#services/playerService.js";
 
 //active lobbies list
 export const activeLobbies = new Map();
@@ -108,7 +116,7 @@ export class Lobby {
 
 /**
  * Factory Function to fully initialize a lobby
- * @param {Player} hostPlayer the player creating the lobby
+ * @param {string || number || Player} hostPlayer the player creating the lobby, either its ID or full Player object
  * @param {number} gameID the ID number for the selected game
  * @param {string} lobbyName optional lobby name, if not present created automatically
  * @param {boolean} isPrivate optional flag (false by default) to set private lobby
@@ -118,13 +126,24 @@ export const sessionCreation = async (hostPlayer, gameID, lobbyName, isPrivate) 
     try {
         //generate random lobby ID
         const randomLobbyID = Date.now().toString(36) + Math.random().toString(36).substring(2, 7);
+        let player = hostPlayer;
+        //check if hostPlayer is just an ID number, if so fetch full Player object from DB
+        if(typeof hostPlayer != "object"){
+            const {opStatus, foundPlayer, message} = await getPlayerInfo(hostPlayer);
+            if(!foundPlayer || opStatus!=200){
+                throw new Error(`Player with ${hostPlayer} identifier not found!`);
+            }else{
+                //saves found player to scope variable
+                player = foundPlayer;
+            }
+        }
         //create lobby instance
-        const newLobby = await Lobby.lobbyInit(randomLobbyID, lobbyName, isPrivate, hostPlayer, gameID);
+        const newLobby = await Lobby.lobbyInit(randomLobbyID, lobbyName, isPrivate, player, gameID);
         //add new lobby to list of active lobbies
         activeLobbies.set(randomLobbyID, newLobby);
         newLobby.lobbyLogging('Lobby created successfully')
         return newLobby;
-    } catch (err) {
+    }catch (err) {
         console.error("Error creating session:", err);
     }
 }

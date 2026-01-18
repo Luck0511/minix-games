@@ -4,7 +4,7 @@ import express from "express";
 //services imports
 import {
     getAllPlayers,
-    getPlayerByName,
+    getPlayerInfo,
     playerSafeData
 } from "#services/playerService.js";
 
@@ -27,11 +27,11 @@ playersRouter.get('/getPlayer', async (req, res) => {
     if(!playerName){
         return res.status(400).json({message: 'Player name is required in query params'});
     }
-    const player = await getPlayerByName(playerName);
-    if(!player){
-        res.status(404).json({message: 'Player not found'});
+    const {opStatus, foundPlayer, message} = (await getPlayerInfo(playerName));
+    if(!foundPlayer){
+        res.status(opStatus).json({message: message});
     }
-    res.status(200).json({message:'Player found', playerInfo: playerSafeData(player)});
+    res.status(opStatus).json({message:'Player found', playerInfo: playerSafeData(foundPlayer)});
 })
 
 export default playersRouter;
