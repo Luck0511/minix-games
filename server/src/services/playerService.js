@@ -11,15 +11,15 @@ import {passwordHash, verifyPassword} from "./authService.js";
 export const basePlayerValidation = (userData, res) => {
     const {playerName, password} = userData;
 
-    if(!playerName || !password){
+    if (!playerName || !password) {
         return res.status(400).json({message: 'Player name and password are required'});
     }
     //check password length
-    if(password.length < 8){
+    if (password.length < 8) {
         return res.status(400).json({message: 'Password must be at least 8 characters long'});
     }
     //set a maximum length for playerName
-    if(playerName.length > 32){
+    if (playerName.length > 32) {
         return res.status(400).json({message: 'Player name must be less than or 32 characters long'});
     }
 }
@@ -40,10 +40,10 @@ export const playerSafeData = (player) => {
  * @returns {Promise<Player[] || null>} Player array promise containing all players registered in DB
  **/
 export const getAllPlayers = async () => {
-    try{
+    try {
         const {Player} = db;
         return await Player.findAll();
-    }catch(err){
+    } catch (err) {
         console.error('Error in DB query:', err)
         return null;
     }
@@ -56,7 +56,7 @@ export const getAllPlayers = async () => {
  **/
 export const getPlayerInfo = async (playerIden) => {
     //check validity of input
-    if(!playerIden){
+    if (!playerIden) {
         console.error('No username or userID provided');
         return {opStatus: 400}; //bad request
     }
@@ -68,60 +68,63 @@ export const getPlayerInfo = async (playerIden) => {
         switch (typeof playerIden) {
             //search by playerName string
             case "string": {
-                 foundPlayer = await Player.findOne({
+                foundPlayer = await Player.findOne({
                     where: {
                         playerName: playerIden
                     }
                 });
+                break;
             }
             //search by playerID number
             case "number": {
                 foundPlayer = await Player.findOne({
                     where: {
                         playerID: playerIden
-                    }});
+                    }
+                });
+                break;
             }
             default: {
                 console.error('Invalid player identifier type:', typeof playerIden);
-                return {opStatus: 400, message: "Invalid player identifier type: "+typeof playerIden}; //bad request
+                return {opStatus: 400, message: "Invalid player identifier type: " + typeof playerIden}; //bad request
             }
         }
-        if(!foundPlayer){
-            return {opStatus: 404, message: "Player: "+playerIden+" could not be found"} // not found
-        }else{
+        if (!foundPlayer) {
+            return {opStatus: 404, message: "Player: " + playerIden + " could not be found"} // not found
+        } else {
             return {opStatus: 200, foundPlayer: foundPlayer}; //success
         }
-    }catch (err){ //unhandled errors
+    } catch (err) { //unhandled errors
         console.error('Error in player query:', err)
-        return {opStatus: 500, existingPlayer: null ,message: "Error in player query: "+err}; //internal server error
+        return {opStatus: 500, existingPlayer: null, message: "Error in player query: " + err}; //internal server error
     }
 }
 
 /**
-* Register a new player by creating a new row in DB
-* @param {String} playerName registered player name
-* @param {String} password registered password
-* @returns {Promise<{opStatus: int, newPlayer:Player?}>} object with final status and nullable Player object
-**/
+ * Register a new player by creating a new row in DB
+ * @param {String} playerName registered player name
+ * @param {String} password registered password
+ * @returns {Promise<{opStatus: int, newPlayer:Player?}>} object with final status and nullable Player object
+ **/
 export const registerNewPlayer = async (playerName, password) => {
-    if(!playerName || !password){
+    if (!playerName || !password) {
         //TODO: add more details to response object (message)
         return {opStatus: 400}; //{message: 'Player name and password are required'}
     }
-    try{
+    try {
         //check if playerName is already taken
         const {opStatus, foundPlayer, message} = await getPlayerInfo(playerName);
-        if(foundPlayer){
+        if (foundPlayer) {
             console.log("A player with this name already exists: ", foundPlayer);
             return {opStatus: 409} //{message: 'A Player with this name already exists'};
-        }else {
+        } else {
             const {Player} = db;
             const hashedPassword = await passwordHash(password)
             const newPlayer = await Player.create({playerName: playerName, password: hashedPassword});
             return {opStatus: 200, newPlayer: newPlayer}
             //{message: 'Player profile created successfully', playerInfo: newPlayer});
         }
-    }catch (err){
+    } catch (err) {
         console.error('Error in player registration:', err)
         return {opStatus: 500} //{message: 'Internal server error'};
     }
@@ -134,28 +137,28 @@ export const registerNewPlayer = async (playerName, password) => {
  * @returns {Promise<{opStatus: number, loggedPlayer:Player?}>} object with final status and nullable Player object
  **/
 export const loginPlayer = async (playerName, password) => {
-    if(!playerName || !password){
+    if (!playerName || !password) {
         //TODO: add more details to response object (message)
         return {opStatus: 400}; //{message: 'Player name and password are required'}
     }
-    try{
+    try {
         //search for player by name
-        const {opStatus, foundPlayer, message}= await getPlayerInfo(playerName);
+        const {opStatus, foundPlayer, message} = await getPlayerInfo(playerName);
         //return error code if player not found
-        if(!foundPlayer){
+        if (!foundPlayer) {
             return {opStatus: opStatus, message: message}; //{opStatus: 404, message: 'Player not found'};
         }
         //match the passwords
         const isPasswordValid = await verifyPassword(password, foundPlayer.password);
         //return code 200 success if password matches
-        if(isPasswordValid){
+        if (isPasswordValid) {
             return {opStatus: 200, loggedPlayer: foundPlayer}
             //{message: 'Player found, credentials correct, logging into account'}
-        }else{
+        } else {
             //TODO: add more details to response object (message)
             return {opStatus: 401}; //{message: 'Wrong password'};
         }
-    }catch(err){
+    } catch (err) {
         console.error('Error in player login:', err)
         //TODO: add more details to response object (message)
         return {opStatus: 500} //{message: 'Internal server error'};
