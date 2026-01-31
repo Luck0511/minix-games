@@ -6,9 +6,9 @@ import {appConfig} from "./src/config/config.js";
 import {validateConfig} from './src/config/config.js';
 import {testConnection} from './src/config/dbConfig.js';
 import {initializeModels} from "./src/models/index.js";
-import {initializeGames} from "./src/gameLogic/index.js";
-import {sessionCreation} from "./src/gameLogic/sessionsManager.js";
-import {registerNewPlayer} from "./src/services/playerService.js";
+import {initializeGames} from "#gameLogic/index.js";
+import {sessionCreation} from "#gameLogic/sessionsManager.js";
+import {registerNewPlayer} from "#services/playerService.js";
 
 const startServer = async () => {
     try{
@@ -67,9 +67,9 @@ startServer().then(async () => {
     const TestPlayer4 = (await registerNewPlayer("TestPlayer4", "12345678")).newPlayer;
 
 
-    const session1 = await sessionCreation(LucaAdmin, 1, '',true);
-    const session2 = await sessionCreation(TestPlayer1, 1);
-    const emptySession = await sessionCreation(TestPlayer4, null, "emptySession");
+    const session1 = (await sessionCreation(LucaAdmin, 1, '', true)).result;
+    const session2 = (await sessionCreation(TestPlayer1, 1)).result;
+    const emptySession = (await sessionCreation(TestPlayer4, null, "emptySession")).result;
 
     setTimeout(() => {
         session1.connectPlayer(TestPlayer2)

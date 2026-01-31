@@ -2,7 +2,7 @@
 import express from "express";
 
 //services imports
-import {publicLobbies} from "#gameLogic/sessionsManager.js";
+import {publicLobbies, sessionCreation} from "#gameLogic/sessionsManager.js";
 
 //set up a authRouter to manage all endpoints
 const lobbiesRouter = express.Router();
@@ -18,8 +18,22 @@ lobbiesRouter.get('/activeLobbies',(req, res) => {
 })
 
 //Method POST - creates a new lobby
-lobbiesRouter.post('/createLobby', (req, res) => {
+lobbiesRouter.post('/createLobby', async (req, res) => {
+    const {gameID, lobbyName, isPrivate} = req.body;
+    const player = req.user;
+    const {opStatus, result} = await sessionCreation(player, gameID, lobbyName, isPrivate);
 
+    if(opStatus === 200){
+        //if opStatus === 200 then lobby creation succeeded
+        res.status(opStatus).json({
+            message: 'Lobby created',
+            lobby: result,
+        });
+    }else{
+        res.status(opStatus).json({
+            message: result
+        });
+    }
 })
 
 //export the router to be used in app.js

@@ -7,6 +7,7 @@ import {
 import {
     getPlayerInfo
 } from "#services/playerService.js";
+import {Player} from "../models/Player.js";
 
 //active lobbies list
 export const activeLobbies = new Map();
@@ -27,16 +28,23 @@ export class Lobby {
         this.maxPlayers = maxPlayers;
         this.roundCounter = 0;
         this.createdAt = new Date().toISOString(); //ISO date, need parsing fron-end side
-
-        this.connectPlayer(hostPlayer).then();
-        this.awaitPlayers().then(() => closeLobby(this.#lobbyID));
     }
 
+    /**
+     * Initial lobby configuration
+     * @param {string} lobbyID the lobby ID
+     * @param {string} lobbyName the lobby name
+     * @param {boolean} isPrivate flag for lobby visibility
+     * @param {Player} hostPlayer the host player instance reference
+     * @param {number} gameID the selected gameID
+     * @return {Lobby} new lobby instance
+     * @throws {Error} game not found
+     **/
     static async lobbyInit(lobbyID, lobbyName, isPrivate, hostPlayer, gameID) {
         let game;
         let maxPlayers;
         //if a game is preselected in creation, set it here
-        if(gameID){
+        if(gameID || gameID != 0){
             //get game info from DB
             game = await getGameByID(gameID)
             //if game not found throw error
@@ -46,7 +54,8 @@ export class Lobby {
             //set max players based on game selected
             maxPlayers = await getMaxPlayersByTypeID(game.get('gameType'));
         }
-        return new Lobby(
+        //new lobby instance
+        const newLobby = new Lobby(
             lobbyID,
             lobbyName || `${hostPlayer.get('playerName')}'s Lobby`,
             isPrivate || false,
@@ -54,6 +63,12 @@ export class Lobby {
             game,
             maxPlayers
         );
+        //connect hostPlayer
+        await newLobby.connectPlayer(hostPlayer).then();
+        //start awaiting players
+        newLobby.awaitPlayers().then(() => closeLobby(newLobby.#lobbyID));
+        //return new lobby
+        return newLobby;
     }
 
     setWinningCondition(condition) {
@@ -116,35 +131,49 @@ export class Lobby {
 
 /**
  * Factory Function to fully initialize a lobby
- * @param {string || number || Player} hostPlayer the player creating the lobby, either its ID or full Player object
+ * @param {string || number || Object || Player} hostPlayer the player creating the lobby, either its ID or full Player object
  * @param {number} gameID the ID number for the selected game
  * @param {string} lobbyName optional lobby name, if not present created automatically
  * @param {boolean} isPrivate optional flag (false by default) to set private lobby
- * @returns {Lobby} the newly created lobby instance
+ * @returns {{opStatus: number, result: Lobby? || string}} object containing operation status and newly created Lobby
  **/
 export const sessionCreation = async (hostPlayer, gameID, lobbyName, isPrivate) => {
-    try {
-        //generate random lobby ID
-        const randomLobbyID = Date.now().toString(36) + Math.random().toString(36).substring(2, 7);
-        let player = hostPlayer;
-        //check if hostPlayer is just an ID number, if so fetch full Player object from DB
-        if(typeof hostPlayer != "object"){
-            const {opStatus, foundPlayer, message} = await getPlayerInfo(hostPlayer);
-            if(!foundPlayer || opStatus!=200){
-                throw new Error(`Player with ${hostPlayer} identifier not found!`);
-            }else{
-                //saves found player to scope variable
-                player = foundPlayer;
-            }
+    //generate random lobby ID
+    const randomLobbyID = Date.now().toString(36) + Math.random().toString(36).substring(2, 7);
+    if(!randomLobbyID){
+        return {opStatus: 500, result: "Server failed to generate LobbyID"}
+    }
+    let player = hostPlayer;
+    //check if hostPlayer is just an ID number, if so fetch full Player object from DB
+    if(typeof hostPlayer != "object" && typeof hostPlayer === "string" || typeof hostPlayer === "number") {
+        const {opStatus, foundPlayer, message} = await getPlayerInfo(hostPlayer);
+        if(!foundPlayer || opStatus!=200){
+            //return if error occurs
+            return {opStatus: opStatus, result: message};
+        }else{
+            //saves found player to scope variable
+            player = foundPlayer;
         }
+    }else if(typeof hostPlayer === "object" && !(hostPlayer instanceof Player)){
+        //if its an object, it contains player name
+        const {opStatus, foundPlayer, message} = await getPlayerInfo(hostPlayer.playerName);
+        if(!foundPlayer || opStatus!=200){
+            //return if error occurs
+            return {opStatus: opStatus, result: message};
+        }else{
+            //saves found player to scope variable
+            player = foundPlayer;
+        }
+    }
+    try{
         //create lobby instance
         const newLobby = await Lobby.lobbyInit(randomLobbyID, lobbyName, isPrivate, player, gameID);
-        //add new lobby to list of active lobbies
         activeLobbies.set(randomLobbyID, newLobby);
         newLobby.lobbyLogging('Lobby created successfully')
-        return newLobby;
-    }catch (err) {
-        console.error("Error creating session:", err);
+        //add new lobby to list of active lobbies
+        return {opStatus: 200, result: newLobby};
+    }catch(err){
+        return {opStatus: 500, result: `Server failed to generate Lobby: ${err.message}`};
     }
 }
 
