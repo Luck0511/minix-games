@@ -46,7 +46,9 @@ export const appConfig = {
         jwtSecret: getRequiredEnv('JWT_SECRET'),
         jwtExpires: getRequiredEnv('JWT_EXPIRES_IN'),
         cookieMaxAge: getNumericEnv('COOKIE_MAX_AGE', 86400000), //1 day
-        bcryptRounds: getNumericEnv('BCRYPT_ROUNDS', 12)
+        bcryptRounds: getNumericEnv('BCRYPT_ROUNDS', 12),
+        apiLimit: getNumericEnv('API_LIMIT', 1000),
+        apiCooldown: getNumericEnv('API_COOLDOWN', 300000),
     }
 }
 
@@ -61,6 +63,8 @@ export const validateConfig = () => {
         'JWT_EXPIRES_IN',
         'COOKIE_MAX_AGE',
         'BCRYPT_ROUNDS',
+        'API_LIMIT',
+        'API_COOLDOWN',
         'DB_NAME',
         'DB_USERNAME',
         'DB_PASSWORD',

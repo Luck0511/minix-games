@@ -1,7 +1,7 @@
 //utility imports
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import rateLimit from 'express-rate-limit';
+import rateLimit, {ipKeyGenerator} from 'express-rate-limit';
 //other imports
 import {appConfig} from "../config/config.js";
 

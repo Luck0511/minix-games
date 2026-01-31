@@ -27,15 +27,7 @@ export const sequelize = new Sequelize(
         dialect: appConfig.database.dialect,
         logging: appConfig.database.logging,
         pool: appConfig.database.pool,
-        define: appConfig.database.define,
-        ...(appConfig.database.dialect === 'postgres' && {
-            dialectOptions: {
-                ssl: {
-                    require: true,
-                    rejectUnauthorized: false
-                }
-            }
-        })
+        define: appConfig.database.define
     }
 );
 

@@ -76,7 +76,6 @@ authRouter.post('/login',async (req, res) => {
             return res.status(200).json({
                 message: 'Player logged in successfully',
                 playerInfo: {
-                    id: loggedPlayer.playerID,
                     playerName: loggedPlayer.playerName,
                 }
             });

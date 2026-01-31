@@ -51,8 +51,8 @@ export const getAllPlayers = async () => {
 
 /**
  * Execute a query searching for a player by its registered playerName Or ID
- * @param {String || number} playerIden registered player name
- * @returns {Promise<{opStatus: int, foundPlayer:Player?, message:string?}>}Player object promise or null for player not found
+ * @param {string || number} playerIden registered player name
+ * @returns {Promise<{opStatus: number, foundPlayer:Player?, message:string?}>}Player object promise or null for player not found
  **/
 export const getPlayerInfo = async (playerIden) => {
     //check validity of input
