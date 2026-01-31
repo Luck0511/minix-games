@@ -60,11 +60,11 @@ startServer().then(async () => {
     console.log('======startup routine terminated======');
 
     //====== TESTING SESSION ========
-    const LucaAdmin = (await registerNewPlayer("lucaAdmin", "123456")).newPlayer;
-    const TestPlayer1 = (await registerNewPlayer("TestPlayer1", "123456")).newPlayer;
-    const TestPlayer2 = (await registerNewPlayer("TestPlayer2", "123456")).newPlayer;
-    const TestPlayer3 = (await registerNewPlayer("TestPlayer3", "123456")).newPlayer;
-    const TestPlayer4 = (await registerNewPlayer("TestPlayer4", "123456")).newPlayer;
+    const LucaAdmin = (await registerNewPlayer("lucaAdmin", "12345678")).newPlayer;
+    const TestPlayer1 = (await registerNewPlayer("TestPlayer1", "12345678")).newPlayer;
+    const TestPlayer2 = (await registerNewPlayer("TestPlayer2", "12345678")).newPlayer;
+    const TestPlayer3 = (await registerNewPlayer("TestPlayer3", "12345678")).newPlayer;
+    const TestPlayer4 = (await registerNewPlayer("TestPlayer4", "12345678")).newPlayer;
 
 
     const session1 = await sessionCreation(LucaAdmin, 1, '',true);

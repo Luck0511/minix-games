@@ -4,6 +4,8 @@ import {API_URL} from "../context/Socket.ctx.jsx";
 const lobbiesAPI = API_URL + '/lobbies';
 const playersAPI = API_URL + '/players';
 
+//sets credentials true by default
+axios.defaults.withCredentials = true;
 
 /**
  * sends a GET request to fetch the list of public lobbies from the server

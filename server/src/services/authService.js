@@ -1,6 +1,7 @@
 //utility imports
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import rateLimit from 'express-rate-limit';
 //other imports
 import {appConfig} from "../config/config.js";
 
@@ -45,13 +46,7 @@ import {appConfig} from "../config/config.js";
     export const verifyPassword = async (password, hashedPassword) => {
         try{
             const match = await bcrypt.compare(password, hashedPassword);
-            if (match) {
-                //passwords matches
-                return true;
-            } else {
-                //passwords do not match
-                return false;
-            }
+            return !!match;
         }catch(err){
             console.error('Error comparing passwords: ', err);
             return false;
@@ -83,15 +78,12 @@ import {appConfig} from "../config/config.js";
      * @returns sets response status code if any errors are detected
      **/
     export const verifyJWT = (req, res, next) => {
-        // get token from header
-        const authHeader = req.headers['authorization'];
-        const token = authHeader && authHeader.split(' ')[1];
-
+        //extract token from Cookies
+        const token = req.cookies.token
         //error on empty token
         if (!token) {
             return res.status(401).json({ error: 'Access token required' });
         }
-
         try {
             // Verify token and add user info to request, allow access next
             req.user = jwt.verify(token, appConfig.auth.jwtSecret);
@@ -101,4 +93,20 @@ import {appConfig} from "../config/config.js";
         }
     }
 
+    export const APILimiter = rateLimit({
+        windowMs: 5*60*1000,
+        max: 1000,
+        keyGenerator: (req)=>{
+            const token = req.cookies.token;
+            return token || req.ip;
+        },
+        handler: (req, res) => {
+            res.status(429).json({
+                error: 'Too many requests',
+                user: req.user?.playerName || req.ip
+            });
+        },
+        standardHeaders: true,
+        legacyHeaders: false,
+    })
 

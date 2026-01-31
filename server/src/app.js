@@ -11,6 +11,7 @@ import lobbiesRouter from '#routers/lobbiesAPI.js';
 import playersRouter from '#routers/playersAPI.js';
 
 import {disconnectClientSocket, initializeClientSocket} from "#socketHandlers/clientHandler.js";
+import {APILimiter, verifyJWT} from "#services/authService.js";
 
 export const app = express();
 export const server = createServer(app);
@@ -30,9 +31,9 @@ app.use(cookieParser()) //parse cookies from requests-response
 app.use(express.json()); //parse JSON from requests-response
 
 //routers mounting allowing access to API endpoints
-app.use('/api/v1/auth', authRouter);
-app.use('/api/v1/lobbies', lobbiesRouter);
-app.use('/api/v1/players', playersRouter);
+app.use('/api/v1/auth', APILimiter, authRouter);
+app.use('/api/v1/lobbies', verifyJWT, APILimiter, lobbiesRouter);
+app.use('/api/v1/players', verifyJWT, APILimiter, playersRouter);
 
 // APIS --> ENDPOINTS MANAGEMENT
 app.get('/', (req, res) => {
