@@ -44,7 +44,7 @@ export class Lobby {
         let game;
         let maxPlayers;
         //if a game is preselected in creation, set it here
-        if(gameID || gameID != 0){
+        if(gameID || gameID !== 0){
             //get game info from DB
             game = await getGameByID(gameID)
             //if game not found throw error
@@ -135,7 +135,7 @@ export class Lobby {
  * @param {number} gameID the ID number for the selected game
  * @param {string} lobbyName optional lobby name, if not present created automatically
  * @param {boolean} isPrivate optional flag (false by default) to set private lobby
- * @returns {{opStatus: number, result: Lobby? || string}} object containing operation status and newly created Lobby
+ * @returns {{opStatus: number, result: Lobby || string}} object containing operation status and newly created Lobby
  **/
 export const sessionCreation = async (hostPlayer, gameID, lobbyName, isPrivate) => {
     //generate random lobby ID
@@ -147,7 +147,7 @@ export const sessionCreation = async (hostPlayer, gameID, lobbyName, isPrivate) 
     //check if hostPlayer is just an ID number, if so fetch full Player object from DB
     if(typeof hostPlayer != "object" && typeof hostPlayer === "string" || typeof hostPlayer === "number") {
         const {opStatus, foundPlayer, message} = await getPlayerInfo(hostPlayer);
-        if(!foundPlayer || opStatus!=200){
+        if(!foundPlayer || opStatus!==200){
             //return if error occurs
             return {opStatus: opStatus, result: message};
         }else{
@@ -155,9 +155,9 @@ export const sessionCreation = async (hostPlayer, gameID, lobbyName, isPrivate) 
             player = foundPlayer;
         }
     }else if(typeof hostPlayer === "object" && !(hostPlayer instanceof Player)){
-        //if its an object, it contains player name
+        //if it's an object, it contains player name
         const {opStatus, foundPlayer, message} = await getPlayerInfo(hostPlayer.playerName);
-        if(!foundPlayer || opStatus!=200){
+        if(!foundPlayer || opStatus!==200){
             //return if error occurs
             return {opStatus: opStatus, result: message};
         }else{
