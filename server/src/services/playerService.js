@@ -104,19 +104,17 @@ export const getPlayerInfo = async (playerIden) => {
  * Register a new player by creating a new row in DB
  * @param {String} playerName registered player name
  * @param {String} password registered password
- * @returns {Promise<{opStatus: int, newPlayer:Player?}>} object with final status and nullable Player object
+ * @returns {Promise<{opStatus: int, newPlayer:Player? , message: string}>} object with final status and nullable Player object
  **/
 export const registerNewPlayer = async (playerName, password) => {
     if (!playerName || !password) {
-        //TODO: add more details to response object (message)
-        return {opStatus: 400}; //{message: 'Player name and password are required'}
+        return {opStatus: 400, message: 'Player name and password are required'};
     }
     try {
         //check if playerName is already taken
         const {opStatus, foundPlayer, message} = await getPlayerInfo(playerName);
         if (foundPlayer) {
-            console.log("A player with this name already exists: ", foundPlayer);
-            return {opStatus: 409} //{message: 'A Player with this name already exists'};
+            return {opStatus: 409, message: 'A Player with this name already exists'};
         } else {
             const {Player} = db;
             if(password.length < 8) {
@@ -124,12 +122,11 @@ export const registerNewPlayer = async (playerName, password) => {
             }
             const hashedPassword = await passwordHash(password)
             const newPlayer = await Player.create({playerName: playerName, password: hashedPassword});
-            return {opStatus: 200, newPlayer: newPlayer}
-            //{message: 'Player profile created successfully', playerInfo: newPlayer});
+            return {opStatus: 200, newPlayer: newPlayer, message: 'Player profile created successfully'};
         }
     } catch (err) {
         console.error('Error in player registration:', err)
-        return {opStatus: 500} //{message: 'Internal server error'};
+        return {opStatus: 500, message: `Error in player registration: ${err.message}`};
     }
 }
 
@@ -137,33 +134,29 @@ export const registerNewPlayer = async (playerName, password) => {
  * Login logic for system, searches existing match in DB and verify password
  * @param {String} playerName registered player name
  * @param {String} password registered password
- * @returns {Promise<{opStatus: number, loggedPlayer:Player?}>} object with final status and nullable Player object
+ * @returns {Promise<{opStatus: number, loggedPlayer:Player?, message: string}>} object with final status and nullable Player object
  **/
 export const loginPlayer = async (playerName, password) => {
     if (!playerName || !password) {
-        //TODO: add more details to response object (message)
-        return {opStatus: 400}; //{message: 'Player name and password are required'}
+        return {opStatus: 400, message: 'Player name and password are required'};
     }
     try {
         //search for player by name
         const {opStatus, foundPlayer, message} = await getPlayerInfo(playerName);
         //return error code if player not found
         if (!foundPlayer) {
-            return {opStatus: opStatus, message: message}; //{opStatus: 404, message: 'Player not found'};
+            return {opStatus: opStatus, message: message}; //use returned value from retrieving info operation
         }
         //match the passwords
         const isPasswordValid = await verifyPassword(password, foundPlayer.password);
         //return code 200 success if password matches
         if (isPasswordValid) {
-            return {opStatus: 200, loggedPlayer: foundPlayer}
-            //{message: 'Player found, credentials correct, logging into account'}
+            return {opStatus: 200, loggedPlayer: foundPlayer, message: 'Player is valid and logged in successfully'};
         } else {
-            //TODO: add more details to response object (message)
-            return {opStatus: 401}; //{message: 'Wrong password'};
+            return {opStatus: 401, message: 'Wrong password'};
         }
     } catch (err) {
-        console.error('Error in player login:', err)
-        //TODO: add more details to response object (message)
-        return {opStatus: 500} //{message: 'Internal server error'};
+        console.error('Error in player login:', err);
+        return {opStatus: 500, message: `Error in player login: ${err.message}`};
     }
 }
