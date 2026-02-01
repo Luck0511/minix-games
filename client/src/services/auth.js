@@ -25,9 +25,9 @@ export function registerRequest(credentials) {
             console.error('Password must be at least 8 characters long');
             return;
         }
-        axios.post(`${authAPI}/register`, {playerName, password}, {withCredentials: true})
+        return axios.post(`${authAPI}/register`, {playerName, password}, {withCredentials: true})
             .then((response) => {
-                console.log("request successful", response.data)
+                return response.data;
             })
     } catch (err) {
         console.error('Error during server register request: ', err);
