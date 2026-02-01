@@ -17,8 +17,8 @@ export const RegisterFormCmp = () => {
         if (userData.password && userData.playerName) {
             console.log("initializing register request: ", userData);
             //call register request service
-            await registerRequest(userData);
-            console.log("register request completed: ", userData);
+            const response = await registerRequest(userData);
+            console.log("register request response: ", response);
         } else {
             console.log('register data are missing');
         }
@@ -42,7 +42,7 @@ export const RegisterFormCmp = () => {
                            placeholder={'Insert your password'}
                            onChange={(e) => setPassword(e.target.value)}/>
                 </label>
-                <button type="submit" disabled={(!userName && !password)}>Login</button>
+                <button type="submit" disabled={(!userName && !password)}>Register</button>
             </form>
         </>
     )
