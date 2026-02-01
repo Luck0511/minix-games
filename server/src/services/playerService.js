@@ -58,7 +58,7 @@ export const getPlayerInfo = async (playerIden) => {
     //check validity of input
     if (!playerIden) {
         console.error('No username or userID provided');
-        return {opStatus: 400}; //bad request
+        return {opStatus: 400, message: 'No username or ID provided'}; //bad request
     }
     //get Player model reference
     const {Player} = db;
@@ -92,11 +92,11 @@ export const getPlayerInfo = async (playerIden) => {
         if (!foundPlayer) {
             return {opStatus: 404, message: "Player: " + playerIden + " could not be found"} // not found
         } else {
-            return {opStatus: 200, foundPlayer: foundPlayer}; //success
+            return {opStatus: 200, foundPlayer: foundPlayer, message: 'Player information retrieved'}; //success
         }
     } catch (err) { //unhandled errors
         console.error('Error in player query:', err)
-        return {opStatus: 500, existingPlayer: null, message: "Error in player query: " + err}; //internal server error
+        return {opStatus: 500, foundPlayer: null, message: "Error in player query: " + err}; //internal server error
     }
 }
 
